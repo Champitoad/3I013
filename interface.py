@@ -1,3 +1,7 @@
+import sys
+sys.path.append("gym-numgrid")
+sys.path.append("agent")
+
 from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
 
@@ -13,9 +17,9 @@ for i_episode in range(10):
     observation = env.reset()
     reward = 0
     done = False
-    info = {'cursor': env.cursor}
+    info = {"cursor": env.cursor}
     while not done:
         action = agent.act(observation, reward, done, info)
         observation, reward, done, info = env.step(action)
-        if info['out_of_bounds']:
+        if info["out_of_bounds"]:
             print(yellow + "Can't get out of the world!" + endc)
