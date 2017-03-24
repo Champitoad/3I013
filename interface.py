@@ -2,24 +2,34 @@ import sys
 sys.path.append("gym-numgrid")
 sys.path.append("agent")
 
+import numpy as np
+import time
 from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
-
 from autoencoder.predicter import Predicter
 
-env = NumGrid(size=(1,1000), digits={1})
-env.configure(num_steps=50)
+yellow = '\033[93m'
+endc = '\033[0m'
 
-agent = Predicter(learning_rate=0.1, nbp_input=784, time_training=1000)
+numgrid = NumGrid(size=(1,20), cursor_size=(10,10), digits={3})
+env = DirectionWrapper(numgrid)
+env.configure(num_steps=500)
 
-for i_episode in range(10):
+agent = Predicter(learning_rate=0.001, nbp_input=np.prod(numgrid.cursor_size), time_training=1000)
+
+for i_episode in range(5):
     print("\n********* EPISODE", i_episode, "**********\n")
-    observation = env.reset()
-    reward = 0
+    env.env.cursor_pos = np.array((10,0))
+    env.env.steps = 0
+    observation = None
+    reward = None
     done = False
-    info = {"cursor": env.cursor}
+    info = {"cursor": env.env.cursor}
+    action = agent.act(observation, reward, done, info)
     while not done:
-        action = agent.act(observation, reward, done, info)
+        env.render()
         observation, reward, done, info = env.step(action)
+        action = agent.act(observation, reward, done, info)
         if info["out_of_bounds"]:
             print(yellow + "Can't get out of the world!" + endc)
+        # time.sleep(0.01)
