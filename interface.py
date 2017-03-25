@@ -14,7 +14,7 @@ endc = '\033[0m'
 numgrid = NumGrid(size=(10,10), cursor_size=(10,10), digits={1}, num_steps=500)
 env = DiscreteDirectionWrapper(numgrid)
 
-agent = Predicter(learning_rate=0.001, nbp_input=np.prod(numgrid.cursor_size), time_training=1000)
+agent = Predicter(learning_rate=0.001, nbp_input=np.prod(numgrid.cursor_size), move_distance=10)
 
 for i_episode in range(5):
     print("\n********* EPISODE", i_episode, "**********\n")
