@@ -11,11 +11,11 @@ from autoencoder.predicter import Predicter
 yellow = '\033[93m'
 endc = '\033[0m'
 
-numgrid = NumGrid(size=(10,10), cursor_size=(12,13), digits={1,2,3,4,5,6,7,8,9}, num_steps=100)
+numgrid = NumGrid(size=(10,10), cursor_size=(9,8), digits={4}, num_steps=100)
 env = DiscreteDirectionWrapper(numgrid)
 
 agent = Predicter(learning_rate=0.001, nbp_input=np.prod(numgrid.cursor_size), move_distance=10)
-moy=0
+
 i=0
 
 for i_episode in range(100):
