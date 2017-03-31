@@ -16,8 +16,6 @@ env = DiscreteDirectionWrapper(numgrid)
 
 agent = Predicter(learning_rate=0.001, nbp_input=np.prod(numgrid.cursor_size), move_distance=10)
 
-i=0
-
 for i_episode in range(100):
     print("\n********* EPISODE", i_episode, "**********\n")
     observation = env.reset()
@@ -27,11 +25,9 @@ for i_episode in range(100):
     action = agent.act(observation, reward, done, info)
     print(action)
     while not done:
-        i+=1
         env.render()
         observation, reward, done, info = env.step(action)
         #if info["out_of_bounds"]:
             #print(yellow + "Can't get out of the world!" + endc)
         action = agent.act(observation, reward, done, info)
-        
         # time.sleep(0.01)
