@@ -3,7 +3,6 @@ sys.path.append("gym-numgrid")
 sys.path.append("agent")
 
 import numpy as np
-import time
 from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
@@ -20,5 +19,5 @@ agent = RandomPredicterAgent(numgrid)
 
 score = 0
 for i in range(num_episodes):
-    score += agent.get_trajectory(render=True)['reward'].sum()
+    score += agent.get_trajectory(render=False)['reward'].sum()
 print("Final score: {}".format(score))

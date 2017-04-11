@@ -18,7 +18,8 @@ def train(digit):
     numgrid = DiscreteDirectionWrapper(numgrid)
     pred = Predicter(cursor_size)
     pred.learn(numgrid, num_episodes)
-    pred.save_model("models/predicter{}.ckpt".format(digit))
+    path = pred.save_model("models/predicter{}.ckpt".format(digit))
+    print("Predicter {} saved in file: {}".format(digit, path))
 
 with Pool(10) as p:
     p.map(train, list(range(10)))
