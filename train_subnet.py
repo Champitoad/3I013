@@ -3,7 +3,7 @@ sys.path.append("gym-numgrid")
 sys.path.append("agent")
 
 import numpy as np
-from multiprocessing import Process
+from multiprocessing import Pool
 from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
@@ -20,8 +20,5 @@ def train(digit):
     pred.learn(numgrid, num_episodes)
     pred.save_model("models/predicter{}.ckpt".format(digit))
 
-jobs = [Process(target=train, args=(digit,)) for digit in range(10)]
-for job in jobs:
-    job.start()
-for job in jobs:
-    job.join()
+with Pool(10) as p:
+    p.map(train, list(range(10)))
