@@ -2,6 +2,7 @@ import numpy as np
 
 red = '\033[91m'
 green = '\033[32m'
+yellow = '\033[93m'
 endc = '\033[0m'
 
 class Agent:
@@ -31,7 +32,10 @@ class Agent:
             actions.append(action)
             observation, reward, done, _ = self.env.step(action)
             rewards.append(reward)
-            color = green if reward >= 0 else red
+            if reward == 0:
+                color = yellow
+            else:
+                color = green if reward > 0 else red
             print(color + 'action:', action, endc)
             if done:
                 break

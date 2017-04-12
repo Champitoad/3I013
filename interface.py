@@ -3,14 +3,15 @@ sys.path.append("gym-numgrid")
 sys.path.append("agent")
 
 import numpy as np
+
 from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
+from consts import *
 
-grid_size = (10,10)
-cursor_size = (12,12)
-num_steps = 100
-num_episodes = 1
+grid_size = (1,10)
+num_steps = 40
+num_episodes = 10
 
 numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps)
 numgrid = DiscreteDirectionWrapper(numgrid)
@@ -18,6 +19,9 @@ numgrid = DiscreteDirectionWrapper(numgrid)
 agent = RandomPredicterAgent(numgrid)
 
 score = 0
-for i in range(num_episodes):
+for episode in range(num_episodes):
     score += agent.get_trajectory(render=True)['reward'].sum()
-print("Final score: {}".format(score))
+max_score = 3 * num_steps * num_episodes
+accuracy = (score + max_score) / (2 * max_score)
+print("Score: {}".format(score))
+print("Accuracy: {}%".format(accuracy*100))
