@@ -9,7 +9,7 @@ from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
 
-grid_size = (1,10)
+grid_size = (10,10)
 num_steps = 20
 num_episodes = 10
 
