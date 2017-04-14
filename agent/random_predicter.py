@@ -17,10 +17,11 @@ class RandomPredicterAgent(Agent):
     
     The agent cumulates evidence from the predicters before trying a guess of the digit.
     """
-    def __init__(self, numgrid, score_thr):
+    def __init__(self, numgrid, acc_thr, score_thr):
         """
         numgrid -- NumGrid environment to evaluate
-        score_thr -- decision threshold for the predicters cumulated score
+        acc_thr -- decision threshold for the predicters score at each step
+        score_thr -- decision threshold to choose which predicter is right
         """
         super().__init__(numgrid, episode_max_length=numgrid.num_steps)
 
@@ -33,6 +34,7 @@ class RandomPredicterAgent(Agent):
             self.preds.append(pred)
 
         self.image = None
+        self.acc_thr = acc_thr
         self.score_thr = score_thr
         self.score = np.zeros(10) # Cumulated score for each predicter
 
@@ -48,12 +50,13 @@ class RandomPredicterAgent(Agent):
         accuracy = lambda pred: pred.accuracy(self.image, direction, next_image)
         with ThreadPool(10) as p:
             accs = p.map(accuracy, self.preds)
-        pred_digit = np.argmax(accs)
-        self.score[pred_digit] += 1
-        for d in range(10):
-            if self.score[d] == self.score_thr:
-                digit = d
-                self.score = np.zeros(10)
+        self.score += np.array(accs) - self.acc_thr
+        prediction = self.score[self.score >= self.score_thr]
+        print(np.round(self.score, 3))
+        if len(prediction) > 0:
+            digit = np.argmax(prediction)
+            self.score = np.zeros(10)
+            print()
 
         self.image = next_image
         return (digit, direction)

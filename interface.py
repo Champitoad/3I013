@@ -12,13 +12,14 @@ from consts import *
 
 grid_size = (1,1000)
 num_episodes = 10
-num_exp = 5
-score_thr = 5
+num_exp = 1
+acc_thr = 0.9
+score_thr = 0.2
 
 def experience(num):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps)
     numgrid = DiscreteDirectionWrapper(numgrid)
-    agent = RandomPredicterAgent(numgrid, score_thr)
+    agent = RandomPredicterAgent(numgrid, acc_thr, score_thr)
     score = 0
     num_preds = 0
     num_ok = 0
