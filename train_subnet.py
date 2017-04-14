@@ -10,8 +10,8 @@ from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
 from consts import *
 
-grid_size = (1,1000)
-num_episodes = 100
+grid_size = (10,500)
+num_episodes = 100000
 move_distance = 4
 
 def train(digit):
