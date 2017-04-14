@@ -50,13 +50,23 @@ class RandomPredicterAgent(Agent):
         accuracy = lambda pred: pred.accuracy(self.image, direction, next_image)
         with ThreadPool(10) as p:
             accs = p.map(accuracy, self.preds)
-        self.score += np.array(accs) - self.acc_thr
-        prediction = self.score[self.score >= self.score_thr]
+
+        self.score += np.array(accs) - self.acc_thr #********************
+
+        #prediction = self.score[self.score >= self.score_thr]
         print(np.round(self.score, 3))
-        if len(prediction) > 0:
-            digit = np.argmax(prediction)
+        if np.max(self.score)>=self.score_thr:
+            digit = np.argmax(self.score)
+            print("on predit ", digit, "avec un score de ", np.max(self.score), "\n")
             self.score = np.zeros(10)
-            print()
+            print(self.score)
+
+        
+        # if len(prediction) > 0:
+        #     digit = np.argmax(prediction)
+        #     print("on predit ", digit, "avec un score de ", np.max(prediction), "\n")
+        #     self.score = np.zeros(10)
+            
 
         self.image = next_image
         return (digit, direction)

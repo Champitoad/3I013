@@ -10,11 +10,11 @@ from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
 
-grid_size = (1,1000)
-num_episodes = 10
+grid_size = (1,100)
+num_episodes = 100
 num_exp = 1
-acc_thr = 0.9
-score_thr = 0.2
+acc_thr = 97
+score_thr = 3
 
 def experience(num):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps)
@@ -24,6 +24,7 @@ def experience(num):
     num_preds = 0
     num_ok = 0
     for episode in range(num_episodes):
+        agent.score = np.zeros(10)
         traj = agent.get_trajectory(print_actions=False, render=False)
         for i in range(num_steps):
             rew = traj['reward'][i]
@@ -34,6 +35,7 @@ def experience(num):
                     num_ok += 1
     accuracy = num_ok / num_preds * 100
     print("\n********* EXPERIENCE", num, "**********")
+    print("num de predictions : ", num_preds)
     print("Score: {}".format(score))
     print("Accuracy: {:.4g}%".format(accuracy))
     return (score, accuracy)

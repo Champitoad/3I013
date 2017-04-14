@@ -28,9 +28,11 @@ class Agent:
         rewards = []
         for i in range(self.config['episode_max_length']):
             observations.append(observation)
+            
             action = self.act(observation)
             actions.append(action)
-            observation, reward, done, _ = self.env.step(action)
+            observation, reward, done, info = self.env.step(action)
+            print("on est sur un ", info["digit"])
             rewards.append(reward)
             if print_actions:
                 if reward == 0:
@@ -48,6 +50,7 @@ class Agent:
                 'done': done,
                 'steps': i + 1
                 }
+                
 
     def learn(self):
         raise NotImplementedError

@@ -10,9 +10,12 @@ from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
 from consts import *
 
-grid_size = (1,1000)
-num_episodes = 100
+grid_size = (10,500)
+num_episodes = 100000
 move_distance = 4
+
+print("table: ", grid_size)
+print("num iterations: ", num_episodes*num_steps)
 
 def train(digit):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
@@ -23,4 +26,5 @@ def train(digit):
     print("Predicter {} saved in file: {}".format(digit, path))
 
 with Pool(10) as p:
-    p.map(train, range(10))
+	print("go")
+	p.map(train, range(10))

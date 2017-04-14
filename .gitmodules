@@ -1,6 +1,3 @@
 [submodule "gym-numgrid"]
 	path = gym-numgrid
 	url = git@github.com:Champitoad/gym-numgrid
-[submodule "agent/autoencoder"]
-	path = agent/autoencoder
-	url = git@github.com:louiscuni/autoencoder
