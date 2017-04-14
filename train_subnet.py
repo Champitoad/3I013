@@ -11,8 +11,7 @@ from autoencoder.predicter import Predicter
 from consts import *
 
 grid_size = (1,1000)
-num_steps = 100
-num_episodes = 5000
+num_episodes = 100
 move_distance = 4
 
 def train(digit):

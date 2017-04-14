@@ -17,7 +17,7 @@ class Agent:
     def act(self, observation):
         raise NotImplementedError
 
-    def get_trajectory(self, render=False):
+    def get_trajectory(self, print_actions=False, render=False):
         """
         Run agent-environment loop for one whole episode (trajectory).
         Returns the dictionary of results.
@@ -32,15 +32,16 @@ class Agent:
             actions.append(action)
             observation, reward, done, _ = self.env.step(action)
             rewards.append(reward)
-            if done:
-                break
-            if render:
-                self.env.render()
+            if print_actions:
                 if reward == 0:
                     color = yellow
                 else:
                     color = green if reward > 0 else red
                 print(color + 'action:', action, endc)
+            if render:
+                self.env.render()
+            if done:
+                break
         return {'reward': np.array(rewards),
                 'observation': np.array(observations),
                 'action': np.array(actions),

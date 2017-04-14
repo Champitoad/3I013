@@ -2,3 +2,4 @@
 
 cursor_size = (27,8)
 directions = {3}
+num_steps = 50
