@@ -32,15 +32,15 @@ class Agent:
             actions.append(action)
             observation, reward, done, _ = self.env.step(action)
             rewards.append(reward)
-            if reward == 0:
-                color = yellow
-            else:
-                color = green if reward > 0 else red
-            print(color + 'action:', action, endc)
             if done:
                 break
             if render:
                 self.env.render()
+                if reward == 0:
+                    color = yellow
+                else:
+                    color = green if reward > 0 else red
+                print(color + 'action:', action, endc)
         return {'reward': np.array(rewards),
                 'observation': np.array(observations),
                 'action': np.array(actions),
