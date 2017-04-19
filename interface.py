@@ -10,7 +10,7 @@ from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
 
-grid_size = (1,100)
+grid_size = (10,100)
 num_episodes = 100
 num_exp = 5
 score_thr = 5

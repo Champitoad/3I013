@@ -2,4 +2,4 @@
 
 cursor_size = (8,8)
 directions = {0,1,2,3}
-num_steps = 1000
+num_steps = 100
