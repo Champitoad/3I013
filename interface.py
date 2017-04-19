@@ -10,11 +10,11 @@ from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
 
-grid_size = (1,100)
+grid_size = (5,5)
 num_episodes = 100
-num_exp = 1
-acc_thr = 97
-score_thr = 3
+num_exp = 10
+acc_thr = 98
+score_thr = 5
 
 def experience(num):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps)
@@ -49,3 +49,4 @@ print("\n********* FINAL RESULTS **********")
 print("Score range: [{};{}]".format(-max_score, max_score))
 print("Mean score: {:.4g}".format(np.mean(scores)))
 print("Mean accuracy: {:.4g}%".format(np.mean(accs)))
+print(score_thr)

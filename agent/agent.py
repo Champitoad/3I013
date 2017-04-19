@@ -22,6 +22,7 @@ class Agent:
         Run agent-environment loop for one whole episode (trajectory).
         Returns the dictionary of results.
         """
+        self.circuit()
         observation = self.env.reset()
         observations = []
         actions = []

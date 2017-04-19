@@ -8,7 +8,7 @@ from multiprocessing.pool import ThreadPool
 
 from agent import Agent
 from autoencoder.predicter import Predicter
-from consts import directions
+from consts import *
 
 class RandomPredicterAgent(Agent):
     """
@@ -38,8 +38,24 @@ class RandomPredicterAgent(Agent):
         self.score_thr = score_thr
         self.score = np.zeros(10) # Cumulated score for each predicter
 
+    def circuit(self):
+        self.cirQ=[]
+        d=0
+        for i in range(num_steps):
+            for j in (range(d+1)):
+                if i%4==0:
+                    self.cirQ.append(3)
+                elif i%4==1:
+                    self.cirQ.append(0)
+                elif i%4==2:
+                    self.cirQ.append(2)
+                else:
+                    self.cirQ.append(1)
+            d+=1
+
+
     def act(self, observation):
-        direction = random.choice(tuple(directions))
+        direction = self.cirQ.pop(0)#random.choice(tuple(directions))
         digit = 10
 
         next_image = Predicter.normalize(observation)
@@ -60,6 +76,7 @@ class RandomPredicterAgent(Agent):
             print("on predit ", digit, "avec un score de ", np.max(self.score), "\n")
             self.score = np.zeros(10)
             print(self.score)
+            self.env.reset()
 
         
         # if len(prediction) > 0:
