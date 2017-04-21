@@ -1,4 +1,5 @@
 import numpy as np
+from consts import *
 
 red = '\033[91m'
 green = '\033[32m'
@@ -17,7 +18,7 @@ class Agent:
     def act(self, observation):
         raise NotImplementedError
 
-    def get_trajectory(self, print_actions=False, render=False):
+    def get_trajectory(self, print_actions=False, render=False, move_distance=move_distance):
         """
         Run agent-environment loop for one whole episode (trajectory).
         Returns the dictionary of results.
@@ -29,11 +30,15 @@ class Agent:
         rewards = []
         for i in range(self.config['episode_max_length']):
             observations.append(observation)
-            
-            action = self.act(observation)
+            if i%move_distance==0:
+                pred=True
+            else:
+                pred=False
+            action = self.act(observation, pred)
             actions.append(action)
             observation, reward, done, info = self.env.step(action)
-            print("on est sur un ", info["digit"])
+            if pred:
+                print("on est sur un ", info["digit"])
             rewards.append(reward)
             if print_actions:
                 if reward == 0:

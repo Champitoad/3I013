@@ -54,20 +54,24 @@ class RandomPredicterAgent(Agent):
             d+=1
 
 
-    def act(self, observation):
-        direction = self.cirQ.pop(0)#random.choice(tuple(directions))
+    def act(self, observation, pred_d):
         digit = 10
-
         next_image = Predicter.normalize(observation)
         if self.image is None:
             self.image = next_image
-            return (digit, direction)
+            self.direction =random.choice(tuple(directions))
+            return (digit, self.direction)
 
-        accuracy = lambda pred: pred.accuracy(self.image, direction, next_image)
-        with ThreadPool(10) as p:
-            accs = p.map(accuracy, self.preds)
+        if pred_d:
+            accuracy = lambda pred: pred.accuracy(self.image, self.direction, next_image)
+            with ThreadPool(10) as p:
+                accs = p.map(accuracy, self.preds)
+            self.direction =random.choice(tuple(directions))#self.cirQ.pop(0)
+        else:
+            return(digit, self.direction)
+        
 
-        self.score += np.array(accs) - self.acc_thr #********************
+        self.score += np.array(accs) - np.array(self.acc_thr) #********************
 
         #prediction = self.score[self.score >= self.score_thr]
         print(np.round(self.score, 3))
@@ -86,4 +90,4 @@ class RandomPredicterAgent(Agent):
             
 
         self.image = next_image
-        return (digit, direction)
+        return (digit, self.direction)

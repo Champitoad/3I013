@@ -11,9 +11,9 @@ from random_predicter import RandomPredicterAgent
 from consts import *
 
 grid_size = (5,5)
-num_episodes = 100
-num_exp = 10
-acc_thr = 98
+num_episodes = 10
+num_exp = 1
+acc_thr = [98.5,88,85,87,88,99.3,95,99.4,96,87.6]
 score_thr = 5
 
 def experience(num):
@@ -25,7 +25,7 @@ def experience(num):
     num_ok = 0
     for episode in range(num_episodes):
         agent.score = np.zeros(10)
-        traj = agent.get_trajectory(print_actions=False, render=False)
+        traj = agent.get_trajectory(print_actions=False, render=False, move_distance=move_distance)
         for i in range(num_steps):
             rew = traj['reward'][i]
             if rew != 0:
