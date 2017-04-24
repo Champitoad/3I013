@@ -28,17 +28,15 @@ class Agent:
         observations = []
         actions = []
         rewards = []
-        for i in range(self.config['episode_max_length']):
+        acc=0
+        
+        for i in range(1,self.config['episode_max_length']+1):
             observations.append(observation)
-            if i%move_distance==0:
-                pred=True
-            else:
-                pred=False
-            action = self.act(observation, pred)
-            actions.append(action)
-            observation, reward, done, info = self.env.step(action)
-            if pred:
-                print("on est sur un ", info["digit"])
+            action = self.act(observation)
+            acc+=action[1]
+
+            actions.append(action[0])
+            observation, reward, done, info = self.env.step(actions[0])
             rewards.append(reward)
             if print_actions:
                 if reward == 0:
@@ -50,11 +48,14 @@ class Agent:
                 self.env.render()
             if done:
                 break
+        acc=acc/self.config['episode_max_length']
+        #print(acc)
         return {'reward': np.array(rewards),
                 'observation': np.array(observations),
                 'action': np.array(actions),
                 'done': done,
-                'steps': i + 1
+                'steps': i + 1,
+                'acuracy' : acc
                 }
                 
 

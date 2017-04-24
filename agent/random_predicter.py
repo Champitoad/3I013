@@ -27,10 +27,10 @@ class RandomPredicterAgent(Agent):
 
         # Load predicter models from disk
         self.preds = []
-        for digit in range(10):
+        for digit in range(1):
             with tf.Graph().as_default():
                 pred = Predicter(numgrid.cursor_size)
-                pred.load_model("models/predicter{}.ckpt".format(digit))
+                pred.load_model("models/predicter2.0{}.ckpt".format(digit))
             self.preds.append(pred)
 
         self.image = None
@@ -54,33 +54,31 @@ class RandomPredicterAgent(Agent):
             d+=1
 
 
-    def act(self, observation, pred_d):
+    def act(self, observation):
         digit = 10
         next_image = Predicter.normalize(observation)
+        self.direction =random.choice(tuple(directions))
         if self.image is None:
-            self.image = next_image
-            self.direction =random.choice(tuple(directions))
-            return (digit, self.direction)
+            self.image = next_image 
+            return ((digit, self.direction), 0)
 
-        if pred_d:
-            accuracy = lambda pred: pred.accuracy(self.image, self.direction, next_image)
-            with ThreadPool(10) as p:
-                accs = p.map(accuracy, self.preds)
-            self.direction =random.choice(tuple(directions))#self.cirQ.pop(0)
-        else:
-            return(digit, self.direction)
+        accuracy = lambda pred: pred.accuracy(self.image, self.direction, next_image)
+
+        with ThreadPool(1) as p:
+            accs = p.map(accuracy, self.preds)
         
+        #self.cirQ.pop(0)
 
-        self.score += np.array(accs) - np.array(self.acc_thr) #********************
+        #self.score += np.array(accs) - np.array(self.acc_thr) #********************
 
         #prediction = self.score[self.score >= self.score_thr]
-        print(np.round(self.score, 3))
-        if np.max(self.score)>=self.score_thr:
-            digit = np.argmax(self.score)
-            print("on predit ", digit, "avec un score de ", np.max(self.score), "\n")
-            self.score = np.zeros(10)
-            print(self.score)
-            self.env.reset()
+        #print(np.round(self.score, 3))
+        # if np.max(self.score)>=self.score_thr:
+        #     digit = np.argmax(self.score)
+        #     print("on predit ", digit, "avec un score de ", np.max(self.score), "\n")
+        #     self.score = np.zeros(10)
+        #     print(self.score)
+        #     self.env.reset()
 
         
         # if len(prediction) > 0:
@@ -90,4 +88,5 @@ class RandomPredicterAgent(Agent):
             
 
         self.image = next_image
-        return (digit, self.direction)
+        
+        return ((digit, self.direction), accs[0])

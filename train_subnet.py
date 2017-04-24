@@ -10,9 +10,9 @@ from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
 from consts import *
 
-grid_size = (1,1000)
-num_episodes = 100
-move_distance = 4
+#grid_size = (1,1000)
+#num_episodes = 100
+move_distance = 1
 
 print("table: ", grid_size)
 print("num iterations: ", num_episodes*num_steps)
@@ -26,6 +26,10 @@ def train(digit):
     #print("Predicter {} saved in file: {}".format(digit, path))
     print("accuracy moyenne de {}", format(digit), "est de ", m)
 
-with Pool(10) as p:
-	print("go")
-	p.map(train, range(10))
+def act(neurone):
+	num_episodes=100
+	num_steps=100
+	nb_neurone=neurone
+	print("nb neurone", nb_neurone)
+	print("num iterations: ", num_episodes*num_steps)
+	train(0)
