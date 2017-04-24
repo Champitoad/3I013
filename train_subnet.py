@@ -14,8 +14,6 @@ from consts import *
 #num_episodes = 100
 move_distance = 1
 
-print("table: ", grid_size)
-print("num iterations: ", num_episodes*num_steps)
 
 def train(digit):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
@@ -23,13 +21,13 @@ def train(digit):
     pred = Predicter(cursor_size)
     m=pred.learn(numgrid, num_episodes, directions, move_distance)
     path = pred.save_model("models/predicter2.0{}.ckpt".format(digit))
-    #print("Predicter {} saved in file: {}".format(digit, path))
+    print("Predicter {} saved in file: {}".format(digit, path))
     print("accuracy moyenne de {}", format(digit), "est de ", m)
 
-def act(neurone):
-	num_episodes=100
-	num_steps=100
-	nb_neurone=neurone
-	print("nb neurone", nb_neurone)
-	print("num iterations: ", num_episodes*num_steps)
-	train(0)
+def act(num):
+    num_episodes=100
+    num_steps=100
+    grid_size = (50,50)
+    print("nb neurone", nb_neurone)
+    print("num iterations: ", num_episodes*num_steps)
+    train(0)

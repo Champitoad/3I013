@@ -29,8 +29,10 @@ class RandomPredicterAgent(Agent):
         self.preds = []
         for digit in range(1):
             with tf.Graph().as_default():
+                print("on charge un nouveaux model")
                 pred = Predicter(numgrid.cursor_size)
                 pred.load_model("models/predicter2.0{}.ckpt".format(digit))
+                print("charge")
             self.preds.append(pred)
 
         self.image = None
@@ -90,3 +92,6 @@ class RandomPredicterAgent(Agent):
         self.image = next_image
         
         return ((digit, self.direction), accs[0])
+
+    def close(self):
+        self.preds[0].close()
