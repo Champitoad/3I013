@@ -36,6 +36,7 @@ class RandomPredicterAgent(Agent):
         self.image = None
         self.acc_thr = acc_thr
         self.score_thr = score_thr
+        print("seuil ",acc_thr) #baisse le seuil
         self.score = np.zeros(10) # Cumulated score for each predicter
 
     def circuit(self):
@@ -55,7 +56,7 @@ class RandomPredicterAgent(Agent):
 
 
     def act(self, observation):
-        direction = self.cirQ.pop(0)#random.choice(tuple(directions))
+        direction = random.choice(tuple(directions))
         digit = 10
 
         next_image = Predicter.normalize(observation)
@@ -67,7 +68,7 @@ class RandomPredicterAgent(Agent):
         with ThreadPool(10) as p:
             accs = p.map(accuracy, self.preds)
 
-        self.score += np.array(accs) - self.acc_thr #********************
+        self.score += np.array(accs) - (np.array(self.acc_thr, dtype='float')*s) #********************
 
         #prediction = self.score[self.score >= self.score_thr]
         print(np.round(self.score, 3))
