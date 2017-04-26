@@ -25,7 +25,7 @@ y4=[0.889,0.862,0.830,0.870,0.862,0.910,0.826,0.885,0.880,0.842]
 n=0.7
 
 def experience(num):
-    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={0}, num_steps=num_steps)
+    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={0}, num_steps=num_steps, mnist_images_path='t10k-images-idx3-ubyte.gz', mnist_labels_path='t10k-labels-idx1-ubyte.gz')
     numgrid = DiscreteDirectionWrapper(numgrid)
     agent = RandomPredicterAgent(numgrid, acc_thr, score_thr)
     score = 0

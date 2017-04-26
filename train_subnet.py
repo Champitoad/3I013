@@ -16,6 +16,7 @@ move_distance = 1
 
 
 def train(digit):
+    print("num iterations: ", num_episodes*num_steps)
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
     numgrid = DiscreteDirectionWrapper(numgrid)
     pred = Predicter(cursor_size)
@@ -25,9 +26,11 @@ def train(digit):
     print("accuracy moyenne de {}", format(digit), "est de ", m)
 
 def act(num):
+    global num_episodes
     num_episodes=100
+    global num_steps
     num_steps=100
     grid_size = (50,50)
     print("nb neurone", nb_neurone)
-    print("num iterations: ", num_episodes*num_steps)
+    #print("num iterations: ", num_episodes*num_steps)
     train(0)
