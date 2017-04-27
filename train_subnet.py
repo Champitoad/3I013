@@ -10,11 +10,15 @@ from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
 from consts import *
 
+mnist_images_path = 'mnist/train-images-idx3-ubyte.gz'
+mnist_labels_path = 'mnist/train-labels-idx1-ubyte.gz'
+
 grid_size = (1,1000)
-num_episodes = 500
+num_episodes = 5000
 
 def train(digit):
-    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
+    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps,\
+                      mnist_images_path=mnist_images_path, mnist_labels_path=mnist_labels_path)
     numgrid = DiscreteDirectionWrapper(numgrid, move_distance)
     pred = Predicter(cursor_size)
     pred.learn(numgrid, num_episodes, directions)

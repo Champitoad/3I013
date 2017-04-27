@@ -50,10 +50,10 @@ class RandomPredicterAgent(Agent):
             accs = p.map(accuracy, self.preds)
         pred_digit = np.argmax(accs)
         self.score[pred_digit] += 1
-        for d in range(10):
-            if self.score[d] == self.score_thr:
-                digit = d
-                self.score = np.zeros(10)
+        ident = np.where(self.score == self.score_thr)[0]
+        if len(ident) == 1:
+            digit = ident[0]
+            self.score = np.zeros(10)
 
         self.image = next_image
         return (digit, direction)
