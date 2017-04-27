@@ -14,8 +14,8 @@ mnist_images_path = 'mnist/t10k-images-idx3-ubyte.gz'
 mnist_labels_path = 'mnist/t10k-labels-idx1-ubyte.gz'
 
 grid_size = (1,50)
-num_episodes = 10
-num_exp = 5
+num_episodes = 50
+num_exp = 100
 score_thr = 5
 
 def experience(num):
