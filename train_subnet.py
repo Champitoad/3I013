@@ -25,5 +25,6 @@ def train(digit):
     path = pred.save_model("models/predicter{}.ckpt".format(digit))
     print("Predicter {} saved in file: {}".format(digit, path))
 
-with Pool(10) as p:
-    p.map(train, range(10))
+if __name__ == '__main__':
+    with Pool(10) as p:
+        p.map(train, range(10))
