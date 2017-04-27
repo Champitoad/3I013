@@ -16,7 +16,7 @@ mnist_labels_path = 'mnist/train-labels-idx1-ubyte.gz'
 grid_size = (1,1000)
 num_episodes = 5000
 
-def train(digit):
+def train(digit, move_distance):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps,\
                       mnist_images_path=mnist_images_path, mnist_labels_path=mnist_labels_path)
     numgrid = DiscreteDirectionWrapper(numgrid, move_distance)
@@ -25,6 +25,9 @@ def train(digit):
     path = pred.save_model("models/predicter{}.ckpt".format(digit))
     print("Predicter {} saved in file: {}".format(digit, path))
 
-if __name__ == '__main__':
+def train_subnets(move_distance):
     with Pool(10) as p:
-        p.map(train, range(10))
+        p.starmap(train, zip(range(10), [move_distance]*10))
+
+if __name__ == '__main__':
+    train_subnets(move_distance)

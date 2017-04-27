@@ -10,6 +10,7 @@ from gym_numgrid.envs import NumGrid
 from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
+from train_subnet import train_subnets
 
 mnist_images_path = 'mnist/t10k-images-idx3-ubyte.gz'
 mnist_labels_path = 'mnist/t10k-labels-idx1-ubyte.gz'
@@ -46,8 +47,6 @@ def experience(num):
     return (score, accuracy, pred_rate)
 
 def experiment(move_distance):
-    print('\n************************ MOVE_DISTANCE = {} ********************'.format(move_distance))
-
     with Pool(num_exp) as p:
         results = p.map(experience, range(1, num_exp+1))
     scores, accs, pred_rates = tuple(zip(*results))
@@ -72,6 +71,8 @@ def experiment(move_distance):
     return data
 
 if __name__ == '__main__':
-    for move_distance in (1,4,8,12):
+    for move_distance in (1,2,4,6,8,12,18,24):
+        print('\n*************** MOVE_DISTANCE = {} ***************'.format(move_distance))
+        train_subnets(move_distance)
         results = experiment(move_distance)
         results.to_csv('results/move_distance_{}.csv'.format(move_distance))
