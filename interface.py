@@ -10,15 +10,15 @@ from gym_numgrid.wrappers import *
 from random_predicter import RandomPredicterAgent
 from consts import *
 
-grid_size = (1,25)
-num_episodes = 1000
-num_exp = 1
-acc_thr = [0.98,0.99,0.98,0.98,0.98,0.98,0.99,0.99,0.98,0.99]
-score_thr = 0.8
+grid_size = (1,15)
+num_episodes = 100
+num_exp = 10
+acc_thr = [0.8599,0.9500,0.8637,0.8600,0.9073,0.8598,0.8790,0.8990,0.8780,0.8979]#[0.97,0.98,0.95,0.96,0.97,0.97,0.97,0.98,0.96,0.97]
+score_thr = 1
 
 def experience(num):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps, mnist_images_path='t10k-images-idx3-ubyte.gz', mnist_labels_path='t10k-labels-idx1-ubyte.gz')
-    numgrid = DiscreteDirectionWrapper(numgrid)
+    numgrid = DiscreteDirectionWrapper(numgrid, move_distance)
     agent = RandomPredicterAgent(numgrid, acc_thr, score_thr)
     score = 0
     num_preds = 0
@@ -40,6 +40,7 @@ def experience(num):
     print("Score: {}".format(score))
     print("Accuracy: {:.4g}%".format(accuracy))
     return (score, accuracy)
+
 
 with Pool(num_exp) as p:
     results = p.map(experience, range(1, num_exp+1))
