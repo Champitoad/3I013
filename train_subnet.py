@@ -18,9 +18,9 @@ move_distance = 1
 def train(digit):
     print("num iterations: ", num_episodes*num_steps)
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
-    numgrid = DiscreteDirectionWrapper(numgrid)
+    numgrid = DiscreteDirectionWrapper(numgrid, move_distance)
     pred = Predicter(cursor_size)
-    m=pred.learn(numgrid, num_episodes, directions, move_distance)
+    m=pred.learn(numgrid, num_episodes, directions)
     path = pred.save_model("models/predicter2.0{}.ckpt".format(digit))
     print("Predicter {} saved in file: {}".format(digit, path))
     print("accuracy moyenne de {}", format(digit), "est de ", m)

@@ -93,5 +93,4 @@ class RandomPredicterAgent(Agent):
         
         return ((digit, self.direction), accs[0])
 
-    def close(self):
-        self.preds[0].close()
+

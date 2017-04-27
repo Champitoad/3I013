@@ -22,7 +22,7 @@ y=[0.902,0.870,0.907, 0.885,0.916,0.853,0.855,0.873,0.804,0.863]
 y2=[0.905,0.890,0.865,0.863,0.880,0.926,0.892,0.844,0.888,0.879]
 y3=[0.884,0.846,0.846,0.870,0.877,0.877,0.912,0.816,0.884,0.927]
 y4=[0.889,0.862,0.830,0.870,0.862,0.910,0.826,0.885,0.880,0.842]
-n=0.7
+
 
 def experience(num):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={0}, num_steps=num_steps, mnist_images_path='t10k-images-idx3-ubyte.gz', mnist_labels_path='t10k-labels-idx1-ubyte.gz')
@@ -43,7 +43,7 @@ def experience(num):
                 num_preds += 1
                 if rew > 0:
                     num_ok += 1
-    agent.close()
+    
     print("\n********* EXPERIENCE", num, "**********\n")
     accuracy=accuracy/num_episodes
     print(accuracy, "\n")
