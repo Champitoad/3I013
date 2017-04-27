@@ -10,15 +10,14 @@ from gym_numgrid.wrappers import *
 from autoencoder.predicter import Predicter
 from consts import *
 
-grid_size = (10,500)
-num_episodes = 100000
-move_distance = 4
+grid_size = (1,1000)
+num_episodes = 500
 
 def train(digit):
     numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, digits={digit}, num_steps=num_steps)
-    numgrid = DiscreteDirectionWrapper(numgrid)
+    numgrid = DiscreteDirectionWrapper(numgrid, move_distance)
     pred = Predicter(cursor_size)
-    pred.learn(numgrid, num_episodes, directions, move_distance)
+    pred.learn(numgrid, num_episodes, directions)
     path = pred.save_model("models/predicter{}.ckpt".format(digit))
     print("Predicter {} saved in file: {}".format(digit, path))
 
