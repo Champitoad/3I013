@@ -17,7 +17,7 @@ acc_thr = [0.98,0.99,0.98,0.98,0.98,0.98,0.99,0.99,0.98,0.99]
 score_thr = 0.8
 
 def experience(num):
-    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps)
+    numgrid = NumGrid(size=grid_size, cursor_size=cursor_size, num_steps=num_steps, mnist_images_path='t10k-images-idx3-ubyte.gz', mnist_labels_path='t10k-labels-idx1-ubyte.gz')
     numgrid = DiscreteDirectionWrapper(numgrid)
     agent = RandomPredicterAgent(numgrid, acc_thr, score_thr)
     score = 0

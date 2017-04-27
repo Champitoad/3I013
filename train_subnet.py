@@ -14,7 +14,7 @@ from consts import *
 
 def train(digit):
     grid_size = (1,500)
-    num_episodes = 10000
+    num_episodes = 1000
     move_distance = 1
 
     print("table: ", grid_size)
