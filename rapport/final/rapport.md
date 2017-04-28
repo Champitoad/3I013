@@ -412,7 +412,27 @@ Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, voici un déro
 # Recherches expérimentales {-}
 \stepcounter{chapter}
 
-TODO: justifier les 2 axes de recherche
+Tout au long de nos travaux, nous avons développé un agent dont le comportement dépend d'un grand nombre de paramètres. La partie recherche a consisté à déterminer lesquels sont les plus importants et comment les optimiser.
+
+Nous avons décidé de nous concentrer sur l’architecture de nos réseaux de neurones, sur la distance de déplacement du curseur et sur l’algorithme de décision.
+
+## Architecture des prédicteurs
+
+Nos réseaux de neurones sont d’une forme symétrique : on réduit progressivement le nombre de neurones par couche jusqu’à la couche centrale, pour ensuite revenir à leur taille initiale. La question à laquelle nous avons essayé de répondre ici concerne la taille que doivent faire ces couches.
+
+L'intérêt de cette question réside dans le fait que le nombre de neurones par couche est le paramètre de base qui détermine l'efficacité de nos prédicteurs, qui sont eux-mêmes à la base de l'algorithme de décision de l'agent. Par conséquent, il a une influence sur l'ensemble des autres paramètres, et l'optimiser permet de s’assurer d'avoir une base solide. De plus, il n’existe pas, à notre connaissance, de méthodes autre que l'expérimentation permettant de choisir la meilleure architecture.
+
+Nous avons donc mené l’expérience suivante : en fixant un chiffre, une taille de curseur et un nombre de directions, nous faisons fluctuer le nombre de neurones des couches cachées. Ce nombre est calculé pour chaque couche comme pourcentage du nombre de neurones de la couche précédente. Avec ces paramètres, nous étudions l’évolution de la précision des prédictions en se basant sur des moyennes obtenues en itérant plusieurs fois la même expérience.
+
+Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit le digit, le nombre de directions ou la taille du curseur.
+
+## Distance de déplacement
+
+![Accuracy moyenne en fonction de la distance de déplacement](img/movedist_acc_mean.png){#fig:movedist_acc_mean width=90%}
+
+![Variance de l'accuracy en fonction de la distance de déplacement](img/movedist_acc_std.png){#fig:movedist_acc_std width=75%}
+
+TODO:
 
 Architecture :
 
@@ -424,22 +444,6 @@ Distance :
 - Plus la distance est grande, plus on doit deviner de rangées de pixels $\Rightarrow$ plus de prédiction
 - Explore plus rapidement les imagettes $\Rightarrow$ vision plus globale sur moins de steps
 - Distance pas trop grande pour garder une corrélation entre image à $t$ et image à $t+1$
-
-## Architecture des prédicteurs
-
-
-
-## Distance de déplacement
-
-- cursor_size = (27,8)
-- directions = {1}
-- num_steps = 20
-- grid_size = (1,1000)
-- num_episodes = 1000
-
-### Test 1
-
-- move_distance = 4
 
 # Conclusion {-}
 
