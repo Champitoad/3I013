@@ -373,7 +373,7 @@ TensorFlow est une bibliothèque Python créée par Google permettant de faire d
 
 Nous avons parlé de rétropropagation du gradient plus haut, qui permet d'optimiser la fonction de coût d'un réseau de neurones, et donc son efficacité dans la prédiction. La rétropropagation est un sujet qui mériterait un projet à lui tout seul : dans notre cas, nous ne nous y sommes pas intéressés plus longuement, car elle est fournie par TensorFlow.
 
-Cette bibliothèque implique une compréhension du code différente des bibliothèques standards. Dans TensorFlow on ne manipule que des tenseurs. Comparable à des vecteurs, ils sont manipulables grâce à des fonctions qui correspondent à des noeuds du graphe de calcul/réseau que l'on construit. On peut distinguer plusieurs types de tenseurs : les constantes, les variables et les placeholders. Comme leur nom l'indique, les constantes sont des tenseurs ayant une valeur constante. Les variables sont des tenseurs qui peuvent être modifiés au cours de l'exécution du graphe. Enfin les placeholders sont des tenseurs dont les valeurs sont affectées après leur initialisation.  
+Cette bibliothèque implique une compréhension du code différente des bibliothèques standards. Dans TensorFlow, on ne manipule que des tenseurs. Comparables à des vecteurs, ils sont manipulables grâce à des fonctions qui correspondent à des noeuds du graphe de calcul/réseau que l'on construit. On peut distinguer plusieurs types de tenseurs : les *constantes*, les *variables* et les *placeholders*. Comme leur nom l'indique, les *constantes* sont des tenseurs ayant une valeur constante. Les *variables* sont des tenseurs qui peuvent être modifiés au cours de l'exécution du graphe, qui sont généralement fonctions d'autres variables. Enfin les *placeholders* sont des tenseurs dont les valeurs sont paramétrées lors du lancement de l'exécution du graphe : on s'en sert donc pour les données variables telles que les entrées du réseau.  
 Ces outils permettent de construire le réseau mais pas de le faire fonctionner. TensorFlow est une bibliothèque dans laquelle on commence par définir l'architecture de notre réseau puis on déclare son fonctionnement. Plus formellement, pour lancer un réseau il faut instancier une session dans laquelle on déclare toutes les fonctions que l'on souhaite calculer. Dans notre cas, on instancie une session par réseau.
 
 
@@ -381,7 +381,7 @@ Ces outils permettent de construire le réseau mais pas de le faire fonctionner.
 
 Les réseaux de neurones, que nous appellerons *prédicteurs*, reçoivent en entrée les niveaux de gris de l'image correspondant au curseur ainsi qu'une direction de déplacement. Leur rôle est de prédire ce que verra l'agent après le déplacement dans la direction donnée.
 
-Pour ce faire, nous entraînons nos réseaux à ce qu'ils prédisent une image de la dimension du curseur. Dans un premier temps, cette image est prédite par le réseau, puis le résultat est comparé au curseur à l'étape $t+1$, permettant d'optimiser progressivement les poids et biais du réseau par rétropropagation de l'erreur.
+Pour ce faire, nous entraînons nos réseaux à prédire une image de la dimension du curseur. Dans un premier temps, cette image est prédite par le réseau, puis le résultat est comparé au curseur à l'étape $t+1$, permettant d'optimiser progressivement les poids et biais du réseau par rétropropagation de l'erreur.
 
 Une fois entraînés, les prédicteurs doivent à chaque étape $t$ de l'exploration d'un chiffre effectuer une prédiction de l'image à l'étape $t+1$, et calculer la *précision* de cette prédiction, qui correspond en fait à la valeur renvoyée par la fonction de coût sur l'observation du curseur à l'instant $t$.
 
@@ -410,7 +410,7 @@ Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, on présente c
 9. Une décision est prise : un prédicteur a atteint le seuil, on procède à une identification.
 10. L’environnement reçoit l’identification et change la zone d’exploration.
 
-![Diagramme de séquence d'une identification](img/agent_env_seq.png){#fig:agent_env_seq width=80%}
+![Diagramme de séquence d'une identification](img/agent_env_seq.png){#fig:agent_env_seq width=70%}
 
 # Recherches expérimentales {-}
 \stepcounter{chapter}
