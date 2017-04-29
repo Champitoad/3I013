@@ -365,13 +365,13 @@ $$C(w,b) = \frac{1}{2n} \sum_x{\left\|y(x) - a\right\|^2}$${#eq:cost_func}
 Dans l'équation (@eq:cost_func) de la fonction de coût quadratique, $n$ est le nombre d'entrées du jeu de données, $a$ est le vecteur résultat, $x$ est le vecteur d'entrée, et $y(x)$ est la sortie attendue.
 L'erreur est ensuite rétropropagée dans le réseau, de la couche de sortie vers la couche d'entrée. C'est ce mécanisme appelé **rétropropagation du gradient** qui permet de modifier les poids et les biais. Une fois l'entraînement terminé, le réseau est prêt à l'utilisation.
 
-Pour implémenter cet algorithme d'entraînement, nous avons utilisé la bibliothèque TensorFlow.
+Pour implémenter ces réseaux de neurones, nous avons utilisé la bibliothèque TensorFlow.
 
 ## TensorFlow 
 
 TensorFlow est une bibliothèque Python créée par Google permettant de faire du calcul numérique performant à l'aide de graphes, très utilisée dans le domaine du machine learning. Elle fournit en particulier un certain nombre d'implémentations clés en main pour les algorithmes d'apprentissage se basant sur les réseaux de neurones. Elle est de ce fait la bibliothèque de choix pour notre projet, et c'est pourquoi il nous a été demandé d'en faire usage par notre encadrant M. Sigaud.
 
-Nous avons parlé de rétropropagation du gradient plus haut, qui permet d'optimiser la fonction de coût d'un réseau de neurone, et donc son efficacité dans la prédiction. La rétropropagation est un sujet qui mériterait un projet à lui tout seul : dans notre cas, nous ne nous y sommes pas intéressés plus longuement, car elle est fournie par TensorFlow.
+Nous avons parlé de rétropropagation du gradient plus haut, qui permet d'optimiser la fonction de coût d'un réseau de neurones, et donc son efficacité dans la prédiction. La rétropropagation est un sujet qui mériterait un projet à lui tout seul : dans notre cas, nous ne nous y sommes pas intéressés plus longuement, car elle est fournie par TensorFlow.
 
 Cette bibliothèque implique une compréhension du code différente des bibliothèques standards. Dans TensorFlow on ne manipule que des tenseurs. Comparable à des vecteurs, ils sont manipulables grâce à des fonctions qui correspondent à des noeuds du graphe de calcul/réseau que l'on construit. On peut distinguer plusieurs types de tenseurs : les constantes, les variables et les placeholders. Comme leur nom l'indique, les constantes sont des tenseurs ayant une valeur constante. Les variables sont des tenseurs qui peuvent être modifiés au cours de l'exécution du graphe. Enfin les placeholders sont des tenseurs dont les valeurs sont affectées après leur initialisation.  
 Ces outils permettent de construire le réseau mais pas de le faire fonctionner. TensorFlow est une bibliothèque dans laquelle on commence par définir l'architecture de notre réseau puis on déclare son fonctionnement. Plus formellement, pour lancer un réseau il faut instancier une session dans laquelle on déclare toutes les fonctions que l'on souhaite calculer. Dans notre cas, on instancie une session par réseau.
@@ -383,36 +383,34 @@ Les réseaux de neurones, que nous appellerons *prédicteurs*, reçoivent en ent
 
 Pour ce faire, nous entraînons nos réseaux à ce qu'ils prédisent une image de la dimension du curseur. Dans un premier temps, cette image est prédite par le réseau, puis le résultat est comparé au curseur à l'étape $t+1$, permettant d'optimiser progressivement les poids et biais du réseau par rétropropagation de l'erreur.
 
-Une fois entraînés, les prédicteurs doivent à chaque étape $t$ de l'exploration d'un chiffre effectuer une prédiction de l'image à l'étape $t+1$, et calculer la *précision* de cette prédiction (en anglais : *accuracy*), qui correspond en fait à la valeur renvoyée par la fonction de coût sur l'observation du curseur à l'instant $t$.
+Une fois entraînés, les prédicteurs doivent à chaque étape $t$ de l'exploration d'un chiffre effectuer une prédiction de l'image à l'étape $t+1$, et calculer la *précision* de cette prédiction, qui correspond en fait à la valeur renvoyée par la fonction de coût sur l'observation du curseur à l'instant $t$.
 
-![Schéma de fonctionnement d'un prédicteur](img/predicter.png){#fig:predicter width=90%}
+![Schéma de fonctionnement d'un prédicteur](img/predicter.png){#fig:predicter width=85%}
 
 Il faut par la suite être capable de savoir si oui ou non, l'agent peut identifier le chiffre sur lequel il travaille.
 
 ## Prise de décisions 
 
-Nous avons décrit précédemment comment un prédicteur renvoyait des *accuracy*. Ce sont ces dernières qui servent de matière première pour la prise de décisions.
+Nous avons décrit précédemment comment un prédicteur renvoyait des *précisions*. Ce sont ces dernières qui servent de matière première pour la prise de décisions.
 
-Pour ce faire nous avons entraîné un prédicteur par chiffre, c'est-à-dire que chaque prédicteur ne renvoie de bonnes accuracy que pour un chiffre en particulier. Il y a dix chiffres, et par conséquent dix prédicteurs. Chacun reçoit la même information et chacun renvoie une accuracy. Ces dernières sont accumulées dans un vecteur score selon un seuil `Se1`. En effet, celui-ci est déterminé en fonction de l'accuracy moyenne des prédictions. Il permet de déterminer si une prédiction est bonne ou mauvaise. Ainsi, pendant les tests, les prédicteurs renvoient leurs résultats qui sont confrontés à ce seuil. Le vecteur score est construit en accumulant les différences entre l'accuracy et le seuil. Si la prédiction n'est pas bonne, le score sera négatif et baissera pendant l'exploration, sinon il sera positif et aura tendance à croître. Les différents scores représentent la "probabilité" que le prédicteur associé soit le bon, ils sont ordonnés dans l'ordre croissant de leur chiffre.
+Pour ce faire nous avons entraîné un prédicteur par chiffre, c'est-à-dire que chaque prédicteur ne renvoie de bonnes précisions que pour un chiffre en particulier. Il y a dix chiffres, et par conséquent dix prédicteurs. Chacun reçoit la même information et chacun renvoie une précision. À chaque pas de temps, on sélectionne le prédicteur qui a renvoyé la plus grande précision et on lui attribue un point. On réitère le processus jusqu’au moment où un seuil de score est atteint par un des prédicteurs, qui correspond alors au chiffre que l'on décide d'utiliser pour l'identification. On réinitialise finalement le score pour la prochaine identification.
 
-Ainsi les scores peuvent se différencier et certains se détacher des autres. Il est nécessaire de déterminer un second seuil. Celui-ci sélectionne les meilleurs scores à partir d'une certaine valeur. Si aucun prédicteur n'est sélectionné, il faut continuer l'exploration, c'est-à-dire envoyer un déplacement à l'environnement. Sinon, la prédiction correspond à l'indice du meilleur score dans le vecteur.
+<!--![Algorithme de décision par accumulation d'évidence](img/accumulation.png){#fig:accumulation width=90%}-->
 
-![Algorithme de décision par accumulation d'évidence](img/accumulation.png){#fig:accumulation width=90%}
+Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, on présente ci-après le déroulement d'une exécution possible de l'algorithme, aussi illustré en figure @fig:agent_env_seq.
 
-Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, voici un déroulement de l’algorithme, aussi illustré en figure @fig:agent_env_seq :
-
-1. L’environnement construit son espace, soit une grille de chiffres.
-2. L’information perçue par le curseur est transmise jusqu’à l’agent.
-3. L’agent calcule dix accuracy, une par prédicteur et les stocke dans un vecteur score.
-4. Une décision est prise : les scores ne sont pas assez concluants, il faut continuer l’exploration de ce chiffre.
-5. Le déplacement du curseur est transmis à l’environnement.
+1. L’environnement construit la grille de chiffres.
+2. Le curseur est transmis à l’agent.
+3. L’agent calcule dix précisions, une par prédicteur et les stocke dans un vecteur score.
+4. Une décision est prise : on n'a pas encore atteint le seuil, il faut continuer l’exploration.
+5. L'agent transmet le déplacement du curseur à l’environnement.
 6. L’environnement déplace le curseur.
-7. L’information perçue par le curseur est transmise jusqu’à l’agent.
-8. L’agent calcule dix accuracy, une par prédicteur et les stocke dans un vecteur score.
-9. Une décision est prise : les scores sont suffisamment élevées pour procéder à une identification.
+7. Le curseur est transmis à l’agent.
+8. L’agent calcule dix précisions, une par prédicteur et les stocke dans un vecteur score.
+9. Une décision est prise : un prédicteur a atteint le seuil, on procède à une identification.
 10. L’environnement reçoit l’identification et change la zone d’exploration.
 
-![Diagramme de séquence d'une prédiction de l'agent dans l'environnement](img/agent_env_seq.png){#fig:agent_env_seq width=80%}
+![Diagramme de séquence d'une identification](img/agent_env_seq.png){#fig:agent_env_seq width=80%}
 
 # Recherches expérimentales {-}
 \stepcounter{chapter}
@@ -427,9 +425,23 @@ Nos réseaux de neurones sont d’une forme symétrique : on réduit progressive
 
 L'intérêt de cette question réside dans le fait que le nombre de neurones par couche est le paramètre de base qui détermine l'efficacité de nos prédicteurs, qui sont eux-mêmes à la base de l'algorithme de décision de l'agent. Par conséquent, il a une influence sur l'ensemble des autres paramètres, et l'optimiser permet de s’assurer d'avoir une base solide. De plus, il n’existe pas, à notre connaissance, de méthodes autre que l'expérimentation permettant de choisir la meilleure architecture.
 
-Nous avons donc mené l’expérience suivante : en fixant un chiffre, une taille de curseur et un nombre de directions, nous faisons fluctuer le nombre de neurones des couches cachées. Ce nombre est calculé pour chaque couche comme pourcentage du nombre de neurones de la couche précédente. Avec ces paramètres, nous étudions l’évolution de la précision des prédictions en se basant sur des moyennes obtenues en itérant plusieurs fois la même expérience.
+Nous avons donc mené l’expérience suivante : en fixant une taille de curseur, un chiffre, un ensemble de directions et une distance de déplacement (table \ref{tbl:arch_params}), nous faisons fluctuer le nombre de neurones des couches cachées. Ce nombre est calculé pour chaque couche comme pourcentage du nombre de neurones de la couche précédente. Avec ces paramètres, nous étudions l’évolution de la précision des prédictions en se basant sur des moyennes obtenues en itérant plusieurs fois la même expérience.
 
-Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit le chiffre, le nombre de directions ou la taille du curseur.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}\hline
+        \thead{Taille du curseur} & \thead{Chiffre} & \thead{Directions} & \thead{Distance de déplacement} \\ \hline
+        $8 \times 8$ & 0 & $\{\downarrow\}$ & 1 pixel \\ \hline
+    \end{tabular}
+    \caption{Paramètres de l'expérience}
+    \label{tbl:arch_params}
+\end{table}
+
+Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit la taille du curseur, le chiffre, l'ensemble de directions et la distance de déplacement. En entraînant le réseau sur 10000 pas de temps, et en moyennant la précision sur 100 itérations de l'expérience effectuant à chaque fois 2500 prédictions, on obtient les résultats suivants (figure @fig:arch_acc) :
+
+<!--![Évolution de la précision en fonction du nombre de neurones par couche](img/arch_acc.png){#fig:arch_acc width=80%}-->
+
+On peut constater que la précision des prédictions atteint son maximum quand chaque couche possède environ 65% du nombre de neurones de la couche précédente. Passé ce cap, la précision stagne. On peut expliquer la croissance de la courbe du fait qu'en-dessous de 65%, l'information est probablement trop compressée dans la partie encodeur du réseau pour pouvoir être décodée sans pertes.
 
 ## Distance de déplacement
 
