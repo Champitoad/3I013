@@ -21,7 +21,7 @@ tocdepth: 3
 
 Ce projet s'inscrit dans le cadre du cours 3I013 : "Introduction à la recherche". Cette unité d'enseignement a pour but de nous faire découvrir le travail de recherche à travers un projet en lien avec les travaux des laboratoires de l'UPMC.  Il s'étend sur tout le second semestre de la L3. Notre sujet est : "Environnement logiciel pour l'apprentissage de l'exploration visuelle d'une image". Il est encadré par Olivier Sigaud, professeur et chercheur à l'Université Pierre et Marie Curie en informatique.
 
-Il existe de nombreux procédés pour identifier des objets dans un espace. Ce projet ajoute une contrainte : on ne peut jamais voir en entier ce que l'on observe. Le but est de concevoir un environnement et un agent qui sont capables d'explorer un espace afin d'identifier ce qui le compose. Dans ce projet, les objets à identifier sont des chiffres manuscrits provenant du jeu de données MNIST. L'espace d'exploration est défini par un ensemble de chiffres disposés en grille.
+Il existe de nombreux procédés permettant d'identifier des objets dans un espace. Ce projet ajoute une contrainte : on ne peut jamais voir en entier ce que l'on observe. Le but est de concevoir un environnement et un agent qui sont capables d'explorer un espace afin d'identifier ce qu'il contient. Dans ce projet, les objets à identifier sont des chiffres manuscrits provenant du jeu de données MNIST. L'espace d'exploration est défini par un ensemble de chiffres disposés en grille.
 
 Ce projet s'est organisé en trois grandes parties : l'environnement, l'agent et la recherche expérimentale des paramètres optimaux. Cette dernière section a pour objectif de comprendre l'influence de certains paramètres sur l'efficacité de l'agent, afin de trouver un réglage aboutissant à des résultats satisfaisants.
 
@@ -36,24 +36,26 @@ L'axe de recherche étant centré sur l'intelligence artificielle, il nous est i
 
 L'environnement et l'agent doivent échanger de l'information et suivent un algorithme assez simple, illustré sur la figure @fig:agent_env_loop :
 
-1. L'environnement construit la grille de chiffres à partir du jeu de données MNIST. On appelle **imagette** une case de la grille ainsi construite, et **espace** l'image que constitue la grille.
-2. L'environnement récupère une petite zone rectangulaire de l'espace à une position donnée : on appelle cette zone **curseur**. Le curseur correspond à la zone de vision de l'agent.
-3. L'agent récupère le curseur fourni par l'environnement.
-4. L'agent analyse ce qu'il voit, puis transmet à l'environnement le déplacement suivant du curseur ainsi qu'une identification du chiffre s'il décide d'en faire une.
-5. Deux cas possibles :
-    a. Si il y a tentative d'identification, alors l'environnement change de zone et recommence à l'étape 2.
-    b. Sinon, l'environnement déplace le curseur dans la direction indiquée par l'agent et recommence à l'étape 2.
+(1) L'environnement construit la grille de chiffres à partir du jeu de données MNIST. On appelle **imagette** une case de la grille ainsi construite, et **espace** l'image que constitue la grille.
+(2) L'environnement récupère une petite zone rectangulaire de l'espace à une position donnée : on appelle cette zone **curseur**. Le curseur correspond à la zone de vision de l'agent.
+(3) L'agent récupère le curseur fourni par l'environnement.
+(4) L'agent analyse ce qu'il voit, puis transmet à l'environnement le déplacement suivant du curseur ainsi qu'une identification du chiffre s'il décide d'en faire une.
+(5) Deux cas possibles :
+    (a) Si l'identification est correcte, alors l'environnement change de zone;
+    (b) Sinon, l'environnement déplace le curseur dans la direction indiquée par l'agent.
+
+On recommence à l'étape (2).
 
 ![Boucle d'interaction agent-environnement](img/agent_env_loop.png){#fig:agent_env_loop width=90%}
 
-Il faut comprendre qu'un déplacement du curseur est un glissement de ce dernier dans son voisinage, alors qu'un changement de zone est un positionnement aléatoire du curseur dans l'espace. Le déplacement du curseur permet l'exploration de l'imagette sur laquelle se trouve l'agent, afin d'aboutir à une identification.
+Un déplacement du curseur est un glissement de ce dernier dans son voisinage, alors qu'un changement de zone est un positionnement aléatoire du curseur dans l'espace. Le déplacement du curseur permet l'exploration de l'imagette sur laquelle se trouve l'agent, afin d'aboutir à une identification.
 
 # Environnement {-}
 \stepcounter{chapter}
 
 L'environnement a pour fonction première de positionner et fournir les données du curseur à l'agent. Il doit être suffisamment générique pour qu'il soit relativement simple de changer d'agent.
 
-Le second rôle de l'environnement est de gérer la récompense de l'agent dans le cadre d'un **apprentissage par renforcement**. En effet, au-delà de fournir les données visuelles du curseur, on veut pouvoir **punir** ou **récompenser** l'agent selon la justesse et/ou la vitesse de l'identification, afin qu'il puisse optimiser son choix de déplacement à l'aide d'un algorithme d'apprentissage par renforcement. Même si nous n'avons pas été chargés de cette partie pour l'agent, l'environnement doit être conçu pour supporter ce cadre d'apprentissage par renforcement, ce que nous ferons en utilisant l'API fournie par la bibliothèque OpenAI Gym.
+Le second rôle de l'environnement est de gérer la récompense de l'agent dans le cadre d'un **apprentissage par renforcement**. En effet, au-delà de fournir les données visuelles du curseur, on veut pouvoir **punir** ou **récompenser** l'agent selon la justesse et/ou la vitesse de l'identification, afin qu'il puisse optimiser son choix de déplacement. Même si nous n'avons pas été chargés de cette partie pour l'agent, l'environnement doit être conçu pour supporter ce cadre d'apprentissage par renforcement, ce que nous ferons en utilisant l'API fournie par la bibliothèque OpenAI Gym.
 
 ## Cahier des charges 
 
@@ -74,17 +76,18 @@ L'environnement est soumis à plusieurs contraintes :
 
 ## Apprentissage par renforcement
 
-Ayant mentionné le terme d'*apprentissage par renforcement* à plusieurs reprises, nous nous devons d'en fournir une explication. On désigne sous ce nom une classe d'algorithmes d'apprentissage utilisés en intelligence artificielle et inspirés de la psychologie animale, dont le principe est de permettre à un agent d'améliorer son adaptation à un environnement par essais-erreurs successifs.
+L'*apprentissage par renforcement* désigne une classe d'algorithmes d'apprentissage utilisés en intelligence artificielle et inspirés de la psychologie animale, dont le principe est de permettre à un agent d'améliorer son adaptation à un environnement par essais-erreurs successifs.
 
-Plus formellement, on dispose de :
+L'apprentissage par renforcement se formalise dans le cadre des processus décisionnels de Markov (\textsc{mdp}). Un \textsc{mdp} définit :
 
 1. un ensemble d'états $S$ de l'agent dans l'environnement;
 2. un ensemble d'actions $A$ que l'agent peut effectuer;
-3. un ensemble de valeurs scalaires "récompenses" $R$ que l'agent peut obtenir.
+3. un ensemble de valeurs scalaires "récompenses" $R$ que l'agent peut obtenir;
+4. une fonction de probabilité de transition entre états $p$. 
 
 À chaque pas de temps $t$ de l'algorithme, l'agent perçoit son état $s_{t}\in S$ et l'ensemble des actions possibles $A(s_{t})$. Il choisit une action $A(s_{t})$ et reçoit de l'environnement un nouvel état $s_{t+1}$ et une récompense $r_{t+1}$. Fondé sur ces interactions, l'algorithme d'apprentissage par renforcement doit permettre à l'agent de développer une politique $\Pi :S\rightarrow A$ qui lui permette de maximiser la quantité de récompenses.
 
-On remarque rapidement les correspondances avec les éléments du cahier des charges qui nous a été fourni par notre encadrant. On peut ainsi définir les différentes composantes de notre modèle :
+On remarque rapidement les correspondances avec les éléments du cahier des charges fourni par notre encadrant. On peut ainsi définir les différentes composantes de notre modèle :
 
 0. On se place dans un espace de largeur $W$ et de hauteur $H$, avec un curseur de largeur $w$ et de hauteur $h$.
 1. $S$ est l'ensemble des curseurs possibles, c'est-à-dire l'ensemble des images aux dimensions du curseur. On a donc $S = G^{h \times w}$, avec $G = \{0,1,\ldots,255\}$ les différents niveaux de gris d'un pixel.
@@ -94,15 +97,15 @@ On remarque rapidement les correspondances avec les éléments du cahier des cha
     b. Le comportement envisagé initialement étant plutôt de faire glisser le curseur dans son voisinage, on peut restreindre notre espace de déplacements aux 4 directions orthogonales. On peut par exemple encoder ces directions sur $P = \{0,1,2,3\}$, valeurs que devra décoder l'environnement pour effectuer le déplacement adéquat.
 
     Pour les chiffres identifiables, on rajoute aux chiffres usuels le nombre $10$, qu'on interprétera comme l'absence de tentative d'identification : $D = \{0,1,\ldots,10\}$.
-3. $R$ est l'ensemble des scores que l'on va attribuer à l'agent selon la justesse de ses identifications. On distingue 3 cas de figures correspondant à 3 fonctions de scores :  
+3. $R$ est l'ensemble des scores que l'on va attribuer à l'agent selon la justesse de ses identifications. On distingue 3 cas de figure correspondant à 3 fonctions de score :  
 
     - $e:X\to \mathbb{R^*_-}$ quand l'identification est incorrecte
-    - $a:X\to \mathbb{R}$ quand l'agent d'abstient de faire une identification
+    - $a:X\to \mathbb{R}$ quand l'agent s'abstient de faire une identification
     - $s:X\to \mathbb{R^*_+}$ quand l'identification est correcte  
 
     $X$ est un ensemble de paramètres de notre choix, par exemple le score de l'agent à l'itération précédente. On peut donc concevoir différents systèmes de score selon le comportement que l'on souhaite encourager chez l'agent :
     a. Si l'objectif est que l'agent prenne rapidement des décisions et tente un grand nombre d'identifications, on choisira des petites valeurs de $e$, et on s'assurera d'avoir $a(x) < 0$.
-    b. Dans notre cas, on cherche plutôt à ce que l'agent soit le plus certain possible avant de tenter une identification, afin de maximiser sa précision. On préfèrera alors avoir de grandes valeurs négatives pour $e$, une valeur nulle pour $a$, et de grandes valeurs positives pour $s$. Pour simplifier, on prendra $e = -3$, $a = 0$, $s = 3$.
+    b. Dans notre cas, on cherche plutôt à ce que l'agent soit le plus certain possible avant de tenter une identification, afin de maximiser sa précision. On préfèrera alors avoir de petites valeurs négatives pour $e$, une valeur nulle pour $a$, et de grandes valeurs positives pour $s$. Pour simplifier, on prendra $e = -3$, $a = 0$, $s = 30$.
 
 ## Implémentation
 
@@ -110,17 +113,17 @@ On remarque rapidement les correspondances avec les éléments du cahier des cha
 
 #### Lecture du jeu de données MNIST
 
-Dans un premier temps, on s'est attelé à mettre en place des fonctions utilitaires permettant de charger le jeu de données MNIST dans un format facile à manipuler pour l'environnement.
+Dans un premier temps, nous nous sommes attelés à mettre en place des fonctions utilitaires permettant de charger le jeu de données MNIST dans un format facile à manipuler pour l'environnement.
 
 Nous utilisons la version officielle du jeu de données disponible sur la page personnelle du pionnier du *deep learning* Yann LeCun. On y trouve notamment que le jeu est divisé en un ensemble dédié à l'apprentissage contenant 60000 images de chiffres manuscrits, et un ensemble de test contenant 10000 images. Les images, qui correspondent à ce qu'on appelle les imagettes, sont de taille $28 \times 28$, avec le chiffre en lui-même tenant dans un rectangle de taille $20 \times 20$ centré dans l'imagette ; ce qui explique l'espace vide entre les chiffres, observable sur la capture d'écran en figure @fig:numgrid.
 
 ![Exemple d'une grille de chiffres de taille $5 \times 5$. Le curseur est représenté en rouge.](img/numgrid.png){#fig:numgrid width=30%}
 
-De plus, chacun des ensembles est réparti sur 2 fichiers : l'un contenant les données visuelles à proprement parler, et l'autre contenant les *labels*, c'est-à-dire les chiffres associés aux images que l'agent doit identifier. On a donc 4 fichiers, tous archivés au format `gzip` et encodés dans un format particulier conçu pour les vecteurs et les tableaux multidimensionnelles numériques : le format `idx`.
+De plus, chacun des ensembles est réparti sur 2 fichiers : l'un contenant les données visuelles à proprement parler, et l'autre contenant les *labels*, c'est-à-dire les chiffres associés aux images que l'agent doit identifier. On a donc 4 fichiers, tous archivés au format `gzip` et encodés dans un format particulier conçu pour les vecteurs et les tableaux multidimensionnels numériques : le format `idx`.
 
 Yann LeCun explique sur sa page comment les données sont encodées dans ce format : la première partie du fichier, le *header*, est dédiée aux métadonnées que sont le **type** des données enregistrées (par exemple `int` ou `float`), ainsi que leurs **dimensions**, c'est-à-dire un $n$-uplet $(d_1,\ldots,d_n)$ où $d_i$ est le nombre de valeurs du tableau sur la $i^{\text{ème}}$ dimension. On a implémenté la fonction `gym_numgrid.utils.get_idx_metadata` qui lit et retourne lesdites métadonnées.
 
-Viennent ensuite les données à proprement parler, que l'on va pouvoir lire --- en utilisant les métadonnées récupérées précédemment --- avec la fonction `gym_numgrid.utils.load_idx_data`. Que ce soit dans la lecture des métadonnées ou des données, on a essayé d'être le plus générique possible en faisant abstraction des informations spécifiques au jeu de données MNIST. En particulier, la méthode `load_idx_data` prend deux paramètres :
+Viennent ensuite les données à proprement parler, que l'on va pouvoir lire --- en utilisant les métadonnées récupérées précédemment --- avec la fonction `gym_numgrid.utils.load_idx_data`. Que ce soit dans la lecture des métadonnées ou des données, nous avons essayé d'être le plus générique possible en faisant abstraction des informations spécifiques au jeu de données MNIST. En particulier, la méthode `load_idx_data` prend deux paramètres :
 
 `outer_shape` :
 
@@ -128,7 +131,7 @@ Viennent ensuite les données à proprement parler, que l'on va pouvoir lire ---
 
 `pos` :
 
-:   liste des indices des données qu'on veut récupérer. On aura par exemple $\text{\texttt{pos}} = [0,2,5]$ pour récupérer dans l'ordre la $1^{\text{ère}}$, la $3^{\text{ème}}$ et la $6^{\text{ème}}$ imagette. Ce paramètre nous sera particulièrement utile pour charger spécifiquement un ensemble de chiffres, par exemple avoir une grille consituée uniquement de 0 et de 3.
+:   liste des indices des données qu'on veut récupérer. On aura par exemple $\text{\texttt{pos}} = [0,2,5]$ pour récupérer dans l'ordre la $1^{\text{ère}}$, la $3^{\text{ème}}$ et la $6^{\text{ème}}$ imagette. Ce paramètre nous sera particulièrement utile pour charger spécifiquement un ensemble de chiffres, par exemple avoir une grille constituée uniquement de 0 et de 3.
 
 Selon que ces 2 paramètres soient spécifiés ou non, on charge un des 4 ensembles d'exemples\footnote{On appelle \textit{exemple} un élément du jeu de données, par exemple une imagette ou un chiffre.} listés dans la table \ref{tbl:load_idx_data_usecases}.
 
@@ -149,11 +152,11 @@ Selon que ces 2 paramètres soient spécifiés ou non, on charge un des 4 ensemb
 
 #### Construction de la grille
 
-Avec ces fonctions utilitaires, la construction de la grille s'avère être bien plus simple à mettre en oeuvre. On l'implémente dans la classe `NumGrid`, dont le fonctionnement est détaillé un peu plus loin.
+Avec ces fonctions utilitaires, la construction de la grille est simple à mettre en oeuvre. On l'implémente dans la classe `NumGrid`, dont le fonctionnement est détaillé un peu plus loin.
 
-Notre première approche a été d'utiliser simplement `load_idx_data` avec pour paramètre $\text{\texttt{outer\_shape}} = (\text{\textit{hauteur}},\text{\textit{largeur}})$. Néanmoins on constatait que le chargement d'une grande grille, par exemple de taille $100 \times 100$, prenait plusieurs dizaines de secondes, ce qui devenait assez problématique lorsqu'il fallait effectuer régulièrement des tests lors du développement de l'agent.
+Notre première approche a été d'utiliser simplement `load_idx_data` avec pour paramètre $\text{\texttt{outer\_shape}} = (\text{\textit{hauteur}},\text{\textit{largeur}})$. Néanmoins, nous avons constaté que le chargement d'une grande grille, par exemple de taille $100 \times 100$, prend plusieurs dizaines de secondes, ce qui devient assez problématique lorsqu'il faut effectuer régulièrement des tests lors du développement de l'agent.
 
-On s'est alors aperçu que le problème venait de l'algorithme utilisé pour charger uniquement un sous-ensemble de chiffres, implémenté en Python de la manière suivante :
+Le problème vient de l'algorithme utilisé pour charger uniquement un sous-ensemble de chiffres, implémenté en Python de la manière suivante :
 
 ``` {#loadgrid .python .numberLines}
 # (1)
@@ -183,15 +186,15 @@ Détaillons les différentes étapes de l'algorithme :
 (3) Chargement des $n+1$ premières images depuis le disque, avec $n$ le dernier indice calculé
 (4) Sélection des labels et des images aux indices calculés
 
-Le problème se situe à l'étape (3), où l'on charge plus d'images qu'il n'est nécessaire ; or une image est bien plus lourde en mémoire qu'un label. L'approche est toujours meilleure que de charger la totalité des images et peut suffire pour des grilles de taille moyenne, mais pas pour de grandes tailles, nécessaires pour permettre l'entraînement de l'agent sur des exemples suffisemment variés.
+Le problème se situe à l'étape (3), où l'on charge plus d'images que nécessaire ; or une image est bien plus lourde en mémoire qu'un label. L'approche est toujours meilleure que de charger la totalité des images et peut suffire pour des grilles de taille moyenne, mais pas pour de grandes tailles, nécessaires pour permettre l'entraînement de l'agent sur des exemples suffisemment variés.
 
 C'est pour pallier ce problème que nous avons rajouté l'option `pos` (et la mécanique interne qui va avec) à la fonction `load_idx_data`, qui nous permet alors de charger directement les images aux indices calculés à l'étape (2).
 
 ### OpenAI Gym 
 
-OpenAI Gym est à la fois une bibliothèque Python offrant un ensemble d’outils facilitant le développement d’environnements pour l’apprentissage par renforcement, et une plateforme communautaire permettant de les partager afin de tester, comparer et améliorer les algorithmes d’apprentissage par renforcement. Elle est dévelopée principalement par la société à but non-lucratif OpenAI, fondée en décembre 2015 par des personnalités célèbres telles que Elon Musk dans le but de promouvoir un développement open-source de l'intelligence artificielle générale --- en partie pour éviter le *risque existentiel* craint par certains.
+OpenAI Gym est à la fois une bibliothèque Python offrant un ensemble d’outils facilitant le développement d’environnements pour l’apprentissage par renforcement, et une plateforme communautaire permettant de les partager afin de tester, comparer et améliorer les algorithmes d’apprentissage par renforcement. Elle est développée principalement par la société à but non-lucratif OpenAI, fondée en décembre 2015 par des personnalités célèbres telles que Elon Musk dans le but de promouvoir un développement open-source de l'intelligence artificielle générale --- en partie pour éviter le *risque existentiel* craint par certains.
 
-Outre ces détails historiques, il est intéressant de remarquer que la bibliothèque est encore en version *bêta*, la première version ayant été publiée sur GitHub en avril 2016. Cela nous a mené à quelques reprises à refactoriser certaines partie de notre code, pour pallier les rétro-incompatibilités amenées dans l'API par les nouvelles versions.
+Outre ces détails historiques, il est intéressant de remarquer que la bibliothèque est encore en version *bêta*, la première version ayant été publiée sur GitHub en avril 2016. Cela nous a mené à quelques reprises à refactoriser certaines parties de notre code, pour pallier les rétro-incompatibilités amenées dans l'API par les nouvelles versions.
 
 ### Classe `NumGrid`
 
@@ -207,7 +210,7 @@ OpenAI Gym étant une bibliothèque récente, la grande majorité de la document
 `observation_space` :
 :   instance de la classe `gym.Space` correspondant à l'espace d'états $S$
 
-On se souvient que dans la [section 1.2](#apprentissage-par-renforcement), on avait défini $A = P \times D$, avec $P$ l'espace des déplacements et $D$ l'espace des chiffres. On choisit de prendre par défaut l'espace de déplacements le plus large (i.e. l'ensemble des positions $P_x \times P_y$), que l'on pourra changer par la suite à l'aide du mécanisme de *wrapper* proposé par OpenAI Gym.
+Dans la [section 1.2](#apprentissage-par-renforcement), nous avons défini $A = P \times D$, avec $P$ l'espace des déplacements et $D$ l'espace des chiffres. Nous choisissons de prendre par défaut l'espace de déplacements le plus large (i.e. l'ensemble des positions $P_x \times P_y$), qui pourra être changé par la suite à l'aide du mécanisme de *wrapper* proposé par OpenAI Gym.
 
 Il reste qu'il faut choisir comment traduire ces définitions mathématiques en instances de `gym.Space` (ou de ses classes filles). La construction des différents espaces est implémentée dans le constructeur `__init__` de `NumGrid`, où l'on peut établir les correspondances listées dans la table \ref{tbl:spaces}.
 
@@ -218,7 +221,7 @@ Il reste qu'il faut choisir comment traduire ces définitions mathématiques en 
 
         $D = \{0,1,\ldots,10\}$ & \texttt{digit\_space} & \texttt{Discrete} &
         Espace discret de taille $n$ codé sur $\{0,1,\ldots,n\}$.
-        Ici on prend $n = 11$, le codage correspondant
+        Ici on prend $n = 10$, le codage correspondant
         exactement à notre définition mathématique. \\ \hline
 
         $P = P_x \times P_y$ & \texttt{position\_space} & \texttt{MultiDiscrete} &
@@ -233,7 +236,7 @@ Il reste qu'il faut choisir comment traduire ces définitions mathématiques en 
         $S = G^{h \times w}$ & \texttt{observation\_space} & \texttt{Box} &
         Espace des réels dans $[\alpha,\beta]^n$.
         On se permet de passer au continu car d'une part le discret
-        y est inclus, et d'autre part on a constaté que des environnements
+        y est inclus, et d'autre part nous avons constaté que des environnements
         existants avec des espaces d'observation similaires, par exemple
         les jeux Atari, utilisent aussi la classe \texttt{Box}.
         Ici on prend donc $\alpha = 0$, $\beta = 255$, $n = h \times w$. \\ \hline
@@ -242,9 +245,11 @@ Il reste qu'il faut choisir comment traduire ces définitions mathématiques en 
     \label{tbl:spaces}
 \end{table}
 
+\newpage
+
 #### Méthodes
 
-On apprend également dans la documentation de la classe `Env` qu'il faut implémenter au moins les 4 méthodes suivantes :
+La documentation de la classe `Env` indique qu'il faut implémenter au moins les 4 méthodes suivantes :
 
 `_step(self, action)` :
 
@@ -268,17 +273,17 @@ On apprend également dans la documentation de la classe `Env` qu'il faut implé
 
 `_reset` :
 
-:   Réinitialise l'état de l'environnement. Cela revient à démarrer un nouvel épisode en repositionnant aléatoirement le curseur dans l'espace, ce que l'on fait en échantillonant notre espace de positions --- `self.position_space.sample()` ; on réinitialise aussi le pas de temps. On retourne finalement la nouvelle position du curseur.
+:   Réinitialise l'état de l'environnement. Cela revient à démarrer un nouvel épisode en repositionnant aléatoirement le curseur dans l'espace, ce que l'on fait en échantillonnant notre espace de positions --- `self.position_space.sample()` ; on réinitialise aussi le pas de temps. On retourne finalement le curseur à sa nouvelle position.
 
 `_render` :
 
-:   Permet d'afficher l'environnement. Dans notre cas, on affiche une fenêtre où sont dessinées la grille de chiffres ainsi que les limites du curseur, comme on a pu le voir précédemment sur la figure @fig:numgrid. L'affichage se met à jour à chaque pas de temps, ce qui revient simplement à redessiner le curseur. L'implémentation se base sur la bibliothèque `gym.envs.classic_control.rendering`, elle-même basée sur la bibliothèque `pyglet`, un port en Python d'OpenGL. On a néanmoins ajouté notre propre classe `gym_numgrid.envs.rendering.Image` permettant de dessiner la grille de chiffres à partir de sa représentation en mémoire vive, la classe `gym.envs.classic_control.Image` ne permettant que le chargement depuis un fichier.
+:   Permet d'afficher l'environnement. Dans notre cas, on affiche une fenêtre où sont dessinées la grille de chiffres ainsi que les limites du curseur, comme nous avons pu le voir précédemment sur la figure @fig:numgrid. L'affichage se met à jour à chaque pas de temps, ce qui revient simplement à redessiner le curseur. L'implémentation se base sur la bibliothèque `gym.envs.classic_control.rendering`, elle-même basée sur la bibliothèque `pyglet`, un port en Python d'OpenGL. Nous avons néanmoins ajouté notre propre classe `gym_numgrid.envs.rendering.Image` permettant de dessiner la grille de chiffres à partir de sa représentation en mémoire vive, car la classe `gym.envs.classic_control.Image` ne permet que le chargement depuis un fichier.
 
 `_close` :
 
 :   Permet d'effectuer toute opération de nettoyage qui serait nécessaire lorsqu'on ne se sert plus de l'environnement. Dans notre cas, on se contente de fermer la fenêtre d'affichage (si on l'utilise).
 
-À cela, on ajoute trois méthodes, considérées comme des attributs grâce au décorateur `@property` de Python, permettant d'accéder simplement aux informations courantes de l'environnement :
+À cela, nous ajoutons trois méthodes, considérées comme des attributs grâce au décorateur `@property` de Python, permettant d'accéder simplement aux informations courantes de l'environnement :
 
 `cursor` :
 
@@ -294,15 +299,15 @@ On apprend également dans la documentation de la classe `Env` qu'il faut implé
 
 ### Espaces et wrappers
 
-On a évoqué dans la [section 1.3.3.1](#espaces-dactions-et-détats) le mécanisme de *wrapper* proposé par OpenAI Gym comme solution pour disposer d'un espace d'actions réduit aux 4 directions. Ce mécanisme est en fait bien plus général, car il permet d'ajouter n'importe quel attribut ou comportement nouveau à un environnement.
+Nous avons évoqué dans la [section 1.3.3.1](#espaces-dactions-et-détats) le mécanisme de *wrapper* proposé par OpenAI Gym comme solution pour disposer d'un espace d'actions réduit aux 4 directions. Ce mécanisme est en fait bien plus général, car il permet d'ajouter n'importe quel attribut ou comportement nouveau à un environnement.
 
-Pour ce faire, on dispose de la classe `gym.Wrapper`, dont le principe est de reprendre l'ensemble de l'API de la classe `Env`, et de stocker en plus l'instance de l'environnement que l'on souhaite modifier, à laquelle on fait appel dans chaque méthode de l'API. L'usage du wrapper sera ainsi similaire à celui de l'environnement, les comportements supplémentaires étant définis dans les méthodes du wrapper.
+Pour ce faire, nous disposonz de la classe `gym.Wrapper`, dont le principe est de reprendre l'ensemble de l'API de la classe `Env`, et de stocker en plus l'instance de l'environnement que l'on souhaite modifier, à laquelle on fait appel dans chaque méthode de l'API. L'usage du wrapper sera ainsi similaire à celui de l'environnement, les comportements supplémentaires étant définis dans les méthodes du wrapper.
 
-En plus de cela, OpenAI Gym propose des sous-classes de `Wrapper` déjà prévues pour la conversion des valeurs entre espaces d'actions et d'observations, respectivement `ActionWrapper` et `ObservationWrapper`. Dans notre cas on héritera uniquement de la classe `ActionWrapper`, en implémentant la méthode `_action(self, action)` qui prend en paramètre l'action dans le nouvel espace d'actions, et retourne l'action correspondante dans l'ancienne espace. On implémente de cette façon 4 wrappers :\footnote{On précise entre parenthèses les paramètres du constructeur quand il y en a.}
+En plus de cela, OpenAI Gym propose des sous-classes de `Wrapper` déjà prévues pour la conversion des valeurs entre espaces d'actions et d'observations, respectivement `ActionWrapper` et `ObservationWrapper`. Dans notre cas, nous héritons uniquement de la classe `ActionWrapper`, en implémentant la méthode `_action(self, action)` qui prend en paramètre l'action dans le nouvel espace d'actions, et retourne l'action correspondante dans l'ancienne espace. Nous implémentons de cette façon 4 wrappers :\footnote{Nous précisons entre parenthèses les paramètres du constructeur quand il y en a.}
 
 `NumGridWrapper` :
 
-:   Classe abstraite dont les autres wrappers héritent, permettant de conserver sur plusieurs "couches" de wrappers les espaces non pris en charge par la classe `Wrapper`, à savoir `digit_space` et `position_space`, ainsi que certains attributs de `NumGrid`. On a donc pas besoin ici d'hériter de `ActionWrapper`\footnote{Ce qui explique que nous n'ayons pas parlé de 5 wrappers.}.
+:   Classe abstraite dont les autres wrappers héritent, permettant de conserver sur plusieurs "couches" de wrappers les espaces non pris en charge par la classe `Wrapper`, à savoir `digit_space` et `position_space`, ainsi que certains attributs de `NumGrid`. Il est donc ici inutile d'hériter de `ActionWrapper`\footnote{Ce qui explique que nous n'ayons pas parlé de 5 wrappers.}.
 
 `DirectionWrapper(distance=1)` :
 
@@ -320,7 +325,7 @@ En plus de cela, OpenAI Gym propose des sous-classes de `Wrapper` déjà prévue
 
 :   Wrapper avec un espace d'actions discret, associant à chaque couple $(\text{\textit{déplacement}},\text{\textit{direction}})$ un entier unique.
 
-Les 3 dernier wrappers sont particulièrement utiles dans le cas où l'agent utilise un espace d'actions de type `Discrete`. On pourra par exemple construire un environnement permettant de spécifier une action discrète (sous forme de nombre entier) et utilisant un déplacement directionnel à l'aide des couches de wrappers suivantes :
+Les 3 dernier wrappers sont particulièrement utiles dans le cas où l'agent utilise un espace d'actions de type `Discrete`. On peut par exemple construire un environnement permettant de spécifier une action discrète (sous forme de nombre entier) et utilisant un déplacement directionnel à l'aide des couches de wrappers suivantes :
 
 ``` {#wrappers .python .numberLines}
 numgrid = NumGrid()
@@ -329,7 +334,7 @@ numgrid = DiscretePositionWrapper(numgrid)
 numgrid = DiscreteActionWrapper(numgrid)
 ```
 
-On remarque que l'ordre du *wrapping* est important dans certains cas : ici on *wrap* en priorité dans un `DiscreteDirectionWrapper`, car ce dernier a besoin d'accéder directement à la position du curseur stockée dans l'environnement non-*wrappé*. Aussi, on utilise le `DiscreteActionWrapper` à la fin car il utilise l'espace de positions modifié par le `DiscretePositionWrapper`.
+On remarque que l'ordre du *wrapping* est important dans certains cas : ici nous utilisons en priorité le `DiscreteDirectionWrapper`, car ce dernier a besoin d'accéder directement à la position du curseur stockée dans l'environnement non-*wrappé*. Aussi, on se sert du `DiscreteActionWrapper` à la fin car il utilise l'espace de positions modifié par le `DiscretePositionWrapper`.
 
 # Agent {-}
 \stepcounter{chapter}
@@ -338,18 +343,18 @@ L'agent est l'entité qui doit identifier les chiffres. Nous nous sommes concent
 
 ## Réseaux de neurones 
 
-La prédiction utilise des réseaux de neurones. On peut résumer ces derniers comme un graphe avec plusieurs couches de sommets, chaque sommet d'une couche étant relié à tous les autres sommets de la couche suivante (figure @fig:neuralnet).
+La prédiction utilise des réseaux de neurones. On peut résumer ces derniers comme des graphes avec plusieurs couches de sommets, chaque sommet d'une couche étant relié à tous les autres sommets de la couche suivante (figure @fig:neuralnet).
 
 ![Exemple d'un réseau de neurones avec 1 couche cachée](img/neuralnet.png){#fig:neuralnet width=50%}
 
-Chaque neurone a un poids, un biais et suit une fonction d'activation. Cette dernière caractérise le type de neurone. Les neurones en entrée du réseau sont particuliers car leur valeur correspond à l'information reçue. Les neurones des couches cachées et de la couche de sortie sont des valeurs calculées à partir des neurones de la couche précédente. En l'occurrence on utilise la fonction d'activation sigmoïde $\sigma$ (figure @fig:sigmoid), définie par :
+Chaque neurone a un poids, un biais et suit une fonction d'activation. Cette dernière caractérise le type de neurone. Les neurones en entrée du réseau sont particuliers car leur valeur correspond à l'information reçue. Les neurones des couches cachées et de la couche de sortie sont des valeurs calculées à partir des neurones de la couche précédente. En l'occurrence nous utilisons la fonction d'activation sigmoïde $\sigma$ (figure @fig:sigmoid), définie par :
 
-\begin{gather*}
-z = w \cdot x + b\\
+\begin{gather}
+z = w \cdot x + b \label{eq:error} \\
 \sigma(z) = \frac{1}{1+e^{-z}}
-\end{gather*}
+\end{gather}
 
-Dans l'équation, $w$ correspond à la matrice des poids sur une couche $l$ donnée, avec $w_{ij}$ le poids de la connection entre le $i^{\text{ème}}$ neurone de la couche $l-1$ et le $j^{\text{ème}}$ neurone de la couche $l$. $x$ est le vecteur (vertical) représentant les sorties des neurones de la couche $l-1$, et $b$ est le vecteur représentant les biais des neurones de la couche $l$.
+Dans l'équation \eqref{eq:error}, $w$ correspond à la matrice des poids sur une couche $l$ donnée, avec $w_{ij}$ le poids de la connection entre le $i^{\text{ème}}$ neurone de la couche $l-1$ et le $j^{\text{ème}}$ neurone de la couche $l$. $x$ est le vecteur colonne représentant les sorties des neurones de la couche $l-1$, et $b$ est le vecteur représentant les biais des neurones de la couche $l$.
 
 ![Représentation graphique de la fonction d'activation sigmoïde](img/sigmoid.png){#fig:sigmoid width=40%}
 
@@ -366,7 +371,7 @@ Pour implémenter cet algorithme d'entraînement, nous avons utilisé la bibliot
 
 TensorFlow est une bibliothèque Python créée par Google permettant de faire du calcul numérique performant à l'aide de graphes, très utilisée dans le domaine du machine learning. Elle fournit en particulier un certain nombre d'implémentations clés en main pour les algorithmes d'apprentissage se basant sur les réseaux de neurones. Elle est de ce fait la bibliothèque de choix pour notre projet, et c'est pourquoi il nous a été demandé d'en faire usage par notre encadrant M. Sigaud.
 
-Nous avons parlé de rétropropagation du gradient plus haut, qui permet d'optimiser la fonction de coût d'un réseau de neurone, et donc son efficacité dans la prédiction. La rétropropagation est un sujet qui mériterait un projet à lui tout seul : dans notre cas, nous ne nous y sommes pas intéressés plus longuement, d'autant que TensorFlow permet d'automatiser cette étape.
+Nous avons parlé de rétropropagation du gradient plus haut, qui permet d'optimiser la fonction de coût d'un réseau de neurone, et donc son efficacité dans la prédiction. La rétropropagation est un sujet qui mériterait un projet à lui tout seul : dans notre cas, nous ne nous y sommes pas intéressés plus longuement, car elle est fournie par TensorFlow.
 
 Cette bibliothèque implique une compréhension du code différente des bibliothèques standards. Dans TensorFlow on ne manipule que des tenseurs. Comparable à des vecteurs, ils sont manipulables grâce à des fonctions qui correspondent à des noeuds du graphe de calcul/réseau que l'on construit. On peut distinguer plusieurs types de tenseurs : les constantes, les variables et les placeholders. Comme leur nom l'indique, les constantes sont des tenseurs ayant une valeur constante. Les variables sont des tenseurs qui peuvent être modifiés au cours de l'exécution du graphe. Enfin les placeholders sont des tenseurs dont les valeurs sont affectées après leur initialisation.  
 Ces outils permettent de construire le réseau mais pas de le faire fonctionner. TensorFlow est une bibliothèque dans laquelle on commence par définir l'architecture de notre réseau puis on déclare son fonctionnement. Plus formellement, pour lancer un réseau il faut instancier une session dans laquelle on déclare toutes les fonctions que l'on souhaite calculer. Dans notre cas, on instancie une session par réseau.
@@ -374,25 +379,25 @@ Ces outils permettent de construire le réseau mais pas de le faire fonctionner.
 
 ## Prédicteurs 
 
-Les réseaux de neurones, que nous appellerons prédicteurs, reçoivent en entrée les niveaux de gris de l'image correspondant à l'information perçue par le curseur ainsi qu'une direction de déplacement. Leur rôle est de prédire ce que verra le curseur après le déplacement dans la direction donnée.
+Les réseaux de neurones, que nous appellerons *prédicteurs*, reçoivent en entrée les niveaux de gris de l'image correspondant au curseur ainsi qu'une direction de déplacement. Leur rôle est de prédire ce que verra l'agent après le déplacement dans la direction donnée.
 
-Pour ce faire, nous entraînons nos réseaux à ce qu'ils prédisent une image de la dimension du curseur. Dans un premier temps, cette image est trouvée aléatoirement, puis le résultat est comparé à l'image perçue par le curseur à l'étape $t+1$, permettant d'optimiser progressivement les poids et biais du réseau par rétropropagation de l'erreur. De cette façon, ils apprennent à prédire une image selon un digit, une zone de ce digit et une direction.
+Pour ce faire, nous entraînons nos réseaux à ce qu'ils prédisent une image de la dimension du curseur. Dans un premier temps, cette image est prédite par le réseau, puis le résultat est comparé au curseur à l'étape $t+1$, permettant d'optimiser progressivement les poids et biais du réseau par rétropropagation de l'erreur.
 
-Une fois entraînés, les prédicteurs doivent à chaque étape $t$ de l'exploration d'un chiffre effectuer une prédiction de l'image à l'étape $t+1$, et calculer la précision de cette prédiction (en anglais : *accuracy*), qui correspond en fait à la valeur renvoyée par la fonction de coût sur l'observation du curseur à l'instant $t$.
+Une fois entraînés, les prédicteurs doivent à chaque étape $t$ de l'exploration d'un chiffre effectuer une prédiction de l'image à l'étape $t+1$, et calculer la *précision* de cette prédiction (en anglais : *accuracy*), qui correspond en fait à la valeur renvoyée par la fonction de coût sur l'observation du curseur à l'instant $t$.
 
 ![Schéma de fonctionnement d'un prédicteur](img/predicter.png){#fig:predicter width=90%}
 
-Il faut par la suite être capable de savoir si oui ou non, l'agent peut identifier le digit sur lequel il travaille.
+Il faut par la suite être capable de savoir si oui ou non, l'agent peut identifier le chiffre sur lequel il travaille.
 
 ## Prise de décisions 
 
 Nous avons décrit précédemment comment un prédicteur renvoyait des *accuracy*. Ce sont ces dernières qui servent de matière première pour la prise de décisions.
 
-Pour ce faire nous avons entraîné un prédicteur par digit, c'est-à-dire que chaque prédicteur ne renvoie que de bonnes accuracy pour un digit en particulier. Il y a dix digits, par conséquent il y a dix prédicteurs. Chacun reçoit la même information et chacun renvoie une accuracy. Ces dernières sont accumulées dans un vecteur score selon un seuil `Se1`. En effet, celui-ci est déterminé en fonction de l'accuracy moyenne des prédictions. Il permet de déterminer si une prédiction est bonne ou mauvaise. Ainsi, pendant les tests, les prédicteurs renvoient leurs résultats qui sont confrontés à ce seuil. Le vecteur score est construit en accumulant les différences entre l'accuracy et le seuil. Si la prédiction n'est pas bonne, le score sera négatif et baissera pendant l'exploration, sinon il sera positif et aura tendance à croître. Les différents scores représentent la "probabilité" que le prédicteur associé soit le bon, ils sont ordonnés dans l'ordre croissant de leur digit.
+Pour ce faire nous avons entraîné un prédicteur par chiffre, c'est-à-dire que chaque prédicteur ne renvoie de bonnes accuracy que pour un chiffre en particulier. Il y a dix chiffres, et par conséquent dix prédicteurs. Chacun reçoit la même information et chacun renvoie une accuracy. Ces dernières sont accumulées dans un vecteur score selon un seuil `Se1`. En effet, celui-ci est déterminé en fonction de l'accuracy moyenne des prédictions. Il permet de déterminer si une prédiction est bonne ou mauvaise. Ainsi, pendant les tests, les prédicteurs renvoient leurs résultats qui sont confrontés à ce seuil. Le vecteur score est construit en accumulant les différences entre l'accuracy et le seuil. Si la prédiction n'est pas bonne, le score sera négatif et baissera pendant l'exploration, sinon il sera positif et aura tendance à croître. Les différents scores représentent la "probabilité" que le prédicteur associé soit le bon, ils sont ordonnés dans l'ordre croissant de leur chiffre.
 
 Ainsi les scores peuvent se différencier et certains se détacher des autres. Il est nécessaire de déterminer un second seuil. Celui-ci sélectionne les meilleurs scores à partir d'une certaine valeur. Si aucun prédicteur n'est sélectionné, il faut continuer l'exploration, c'est-à-dire envoyer un déplacement à l'environnement. Sinon, la prédiction correspond à l'indice du meilleur score dans le vecteur.
 
-![Algorithme de décision du digit par accumulation d'évidence](img/accumulation.png){#fig:accumulation width=90%}
+![Algorithme de décision par accumulation d'évidence](img/accumulation.png){#fig:accumulation width=90%}
 
 Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, voici un déroulement de l’algorithme, aussi illustré en figure @fig:agent_env_seq :
 
@@ -424,7 +429,7 @@ L'intérêt de cette question réside dans le fait que le nombre de neurones par
 
 Nous avons donc mené l’expérience suivante : en fixant un chiffre, une taille de curseur et un nombre de directions, nous faisons fluctuer le nombre de neurones des couches cachées. Ce nombre est calculé pour chaque couche comme pourcentage du nombre de neurones de la couche précédente. Avec ces paramètres, nous étudions l’évolution de la précision des prédictions en se basant sur des moyennes obtenues en itérant plusieurs fois la même expérience.
 
-Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit le digit, le nombre de directions ou la taille du curseur.
+Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit le chiffre, le nombre de directions ou la taille du curseur.
 
 ## Distance de déplacement
 
