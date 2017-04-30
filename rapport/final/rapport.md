@@ -129,7 +129,7 @@ Viennent ensuite les données à proprement parler, que l'on va pouvoir lire ---
 
 `outer_shape` :
 
-:   dimensions "extérieures" que l'on souhaite ajouter aux dimensions lues dans les métadonnées. Typiquement, pour obtenir une grille contenant 10 imagettes en largeur et 5 en hauteur, on aura $\text{\texttt{outer\_shape}} = (10,5)$.
+:   dimensions "extérieures" que l'on souhaite ajouter aux dimensions lues dans les métadonnées. Typiquement, pour obtenir une grille contenant 10 imagettes en hauteur et 5 en largeur, on aura $\text{\texttt{outer\_shape}} = (10,5)$.
 
 `pos` :
 
@@ -303,7 +303,7 @@ La documentation de la classe `Env` indique qu'il faut implémenter au moins les
 
 Nous avons évoqué dans la [section 1.3.3.1](#espaces-dactions-et-détats) le mécanisme de *wrapper* proposé par OpenAI Gym comme solution pour disposer d'un espace d'actions réduit aux 4 directions. Ce mécanisme est en fait bien plus général, car il permet d'ajouter n'importe quel attribut ou comportement nouveau à un environnement.
 
-Pour ce faire, nous disposonz de la classe `gym.Wrapper`, dont le principe est de reprendre l'ensemble de l'API de la classe `Env`, et de stocker en plus l'instance de l'environnement que l'on souhaite modifier, à laquelle on fait appel dans chaque méthode de l'API. L'usage du wrapper sera ainsi similaire à celui de l'environnement, les comportements supplémentaires étant définis dans les méthodes du wrapper.
+Pour ce faire, nous disposons de la classe `gym.Wrapper`, dont le principe est de reprendre l'ensemble de l'API de la classe `Env`, et de stocker en plus l'instance de l'environnement que l'on souhaite modifier, à laquelle on fait appel dans chaque méthode de l'API. L'usage du wrapper sera ainsi similaire à celui de l'environnement, les comportements supplémentaires étant définis dans les méthodes du wrapper.
 
 En plus de cela, OpenAI Gym propose des sous-classes de `Wrapper` déjà prévues pour la conversion des valeurs entre espaces d'actions et d'observations, respectivement `ActionWrapper` et `ObservationWrapper`. Dans notre cas, nous héritons uniquement de la classe `ActionWrapper`, en implémentant la méthode `_action(self, action)` qui prend en paramètre l'action dans le nouvel espace d'actions, et retourne l'action correspondante dans l'ancienne espace. Nous implémentons de cette façon 4 wrappers :\footnote{Nous précisons entre parenthèses les paramètres du constructeur quand il y en a.}
 
@@ -423,7 +423,7 @@ Nous avons décidé de nous concentrer sur l’architecture de nos réseaux de n
 
 ## Architecture des prédicteurs
 
-Nos réseaux de neurones sont d’une forme symétrique : on réduit progressivement le nombre de neurones par couche jusqu’à la couche centrale, pour ensuite revenir à leur taille initiale. La question à laquelle nous avons essayé de répondre ici concerne la taille que doivent faire ces couches.
+Nos réseaux de neurones sont d’une forme symétrique : on réduit progressivement le nombre de neurones par couche jusqu’à la couche centrale (partie *encodeur*), pour ensuite revenir à leur taille initiale (partie *décodeur*). La question à laquelle nous avons essayé de répondre ici concerne la taille que doivent faire ces couches.
 
 L'intérêt de cette question réside dans le fait que le nombre de neurones par couche est le paramètre de base qui détermine l'efficacité de nos prédicteurs, qui sont eux-mêmes à la base de l'algorithme de décision de l'agent. Par conséquent, il a une influence sur l'ensemble des autres paramètres, et l'optimiser permet de s’assurer d'avoir une base solide. De plus, il n’existe pas, à notre connaissance, de méthodes autre que l'expérimentation permettant de choisir la meilleure architecture.
 
@@ -441,7 +441,7 @@ Nous avons donc mené l’expérience suivante : en fixant une taille de curseur
 
 Nous faisons l’hypothèse que le comportement décrit par nos résultats sera similaire quelque soit la taille du curseur, le chiffre, l'ensemble de directions et la distance de déplacement. En entraînant le réseau sur 10000 pas de temps, et en moyennant la précision sur 100 itérations de l'expérience effectuant à chaque fois 2500 prédictions, on obtient les résultats suivants (figure @fig:arch_acc) :
 
-<!--![Évolution de la précision en fonction du nombre de neurones par couche](img/arch_acc.png){#fig:arch_acc width=80%}-->
+![Évolution de la précision en fonction du nombre de neurones par couche](img/arch_acc.png){#fig:arch_acc width=70%}
 
 On peut constater que la précision des prédictions atteint son maximum quand chaque couche possède environ 65% du nombre de neurones de la couche précédente. Passé ce cap, la précision stagne. On peut expliquer la croissance de la courbe du fait qu'en-dessous de 65%, l'information est probablement trop compressée dans la partie encodeur du réseau pour pouvoir être décodée sans pertes.
 
@@ -463,14 +463,14 @@ Nous avons donc calculé l’accuracy de notre agent en fonction de la distance 
     \label{tbl:movedist_params}
 \end{table}
 
-![Accuracy moyenne en fonction de la distance de déplacement](img/movedist_acc_mean.png){#fig:movedist_acc_mean width=90%}
-
 Nous nous sommes tout d’abord intéressés à l’accuracy moyenne sur les 100 itérations de l’expérience (figure @fig:movedist_acc_mean). On constate que la distance de déplacement qui donne la meilleure accuracy (72%) est de 3 pixels, dépassant de plus de 15% l’accuracy pour 1 pixel. Cela confirme donc bien notre hypothèse de départ.  
 Les distances comprises entre 4 et 6 pixels stagnent à 60%, après quoi l’accuracy baisse progressivement jusqu’à 10%. Cette asymptote n’est pas surprenante : elle correspond à l’accuracy qu’aurait un agent tentant des identifications complètement au hasard. Ce phénomène peut s’expliquer du fait que la distance devient trop grande par rapport à la taille du curseur. Par exemple à 24 pixels, le curseur effectue des bonds trop grands pour que les prédicteurs puissent établir une quelconque corrélation entre l’image à $t$ et l’image à $t+1$, d’autant plus que les deux images correspondent à deux chiffres différents.
 
-![Variance de l'accuracy en fonction de la distance de déplacement](img/movedist_acc_std.png){#fig:movedist_acc_std width=80%}
+![Accuracy moyenne en fonction de la distance de déplacement](img/movedist_acc_mean.png){#fig:movedist_acc_mean width=90%}
 
 On s’est intéressés ensuite à la variance de notre accurracy sur les 100 itérations de l’expérience. Comme on peut déjà le voir sur la figure @fig:movedist_acc_mean, il existe un certain écart entre l’accuracy minimum et l’accuracy maximum ; néanmoins cet écart est constant quelque soit la distance de déplacement, comme en témoigne la caractère parallèle des courbes. La courbe de la variance dessinée sur la figure @fig:movedist_acc_std confirme cette constance, avec une variance qui oscille entre 4% et 5%. Même si ce n’est pas une valeur extrêmement élevée, cela traduit tout de même une certaine part d’aléa dans l’identification, qu’on ne peut donc pas corréler à la distance de déplacement ; elle est en fait probablement dûe à l’espace vide entre les chiffres, qui biaise la décision du fait que les prédicteurs sont tous bons pour prédire du vide.
+
+![Variance de l'accuracy en fonction de la distance de déplacement](img/movedist_acc_std.png){#fig:movedist_acc_std width=80%}
 
 \newpage
 
@@ -483,8 +483,6 @@ Chaque prédicteur renvoie une précision qui est accumulée dans un vecteur sco
 Ainsi les scores peuvent se différencier et certains se détacher des autres. Il est nécessaire de déterminer un second seuil `Se2`. Celui-ci sélectionne les meilleurs scores à partir d’une certaine valeur. Si aucun prédicteur n’est sélectionné, il faut continuer l’exploration. Sinon, l'identification correspond à l’indice du meilleur score dans le vecteur.
 
 ![Schéma de fonctionnement du nouvel algorithme de décision](img/acc_v2.png){#fig:acc_v2 width=100%}
-
-\newpage
 
 Hélas cet algorithme n’a pas été retenu car les résultats finaux étaient sensiblement plus bas qu’avec notre premier algorithme de décision. Sa faiblesse réside dans le fait que les prédicteurs prédisent avec une précision qui peut fluctuer, par conséquent le seuil n’est pas le même selon le prédicteur. De plus, même en considérant un seuil différent par prédicteur, la valeur à déterminer doit être très précise, une petite déviation pouvant être très significative. Une solution envisageable serait de trouver ce seuil au travers d'un apprentissage supervisé, solution que nous n'avons pas eu le temps d'implémenter.
 
