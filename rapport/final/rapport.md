@@ -30,6 +30,8 @@ Bien que primordiale, elle a dû être réalisée rapidement car l'intérêt de 
 
 L'axe de recherche étant centré sur l'intelligence artificielle, il nous est imposé d'explorer des solutions faisant appel à des réseaux de neurones. Cette étape se divise en trois parties : la prédiction, la prise de décisions et l'exploration de l'image. En accord avec notre encadrant, nous nous sommes concentrés sur les deux premières étapes.
 
+L’ensemble du code produit, ainsi que ce rapport, sont disponibles sur le dépôt GitHub du projet : [https://github.com/Champitoad/3I013](https://github.com/Champitoad/3I013).
+
 \newpage
 
 ## Interaction agent-environnement {-}
@@ -412,10 +414,10 @@ Afin de mieux comprendre et d’avoir une bonne vue d’ensemble, on présente c
 
 ![Diagramme de séquence d'une identification](img/agent_env_seq.png){#fig:agent_env_seq width=70%}
 
-# Recherches expérimentales {-}
+# Étude expérimentale {-}
 \stepcounter{chapter}
 
-Tout au long de nos travaux, nous avons développé un agent dont le comportement dépend d'un grand nombre de paramètres. La partie recherche a consisté à déterminer lesquels sont les plus importants et comment les optimiser.
+Tout au long de nos travaux, nous avons développé un agent dont le comportement dépend d'un grand nombre de paramètres. Cette partie consiste à déterminer lesquels sont les plus importants et comment les optimiser.
 
 Nous avons décidé de nous concentrer sur l’architecture de nos réseaux de neurones, sur la distance de déplacement du curseur et sur l’algorithme de décision.
 
@@ -445,23 +447,55 @@ On peut constater que la précision des prédictions atteint son maximum quand c
 
 ## Distance de déplacement
 
+L’exploration d’une imagette dépend de la taille du curseur et de la distance de ses déplacements. Nous avons voulu savoir quelle influence cette distance a sur l’accuracy de l’agent, c’est-à-dire la proportion d’identifications correctes sur l’ensemble des tentatives d’identification.
+
+En effet, nous souhaitons vérifier l’hypothèse selon laquelle plus la distance est grande, plus l'accuracy est élevée. L’idée est que pour pouvoir identifier ce que l’on voit, il faut être capable de se représenter dans son ensemble le chiffre que l’on regarde. Or en ne déplaçant le curseur que d’un pixel à chaque pas de temps, il devient fastidieux de parcourir l’espace et de se souvenir de ce que l’on a vu. De plus, notre algorithme repose sur une accumulation d’évidences basée elle-même sur des prédictions du curseur. Ces prédictions nous semblent peu intéressantes si elles consistent à prédire en très grande partie l’image sur laquelle on se trouve déjà. En augmentant la distance de déplacement, le parcours du digit devient alors plus efficace et nos prédicteurs sont capables de prédire un plus grand nombre de pixels.
+
+Nous avons donc calculé l’accuracy de notre agent en fonction de la distance de déplacement, sur la base de 100 itérations de la même expérience de 2500 pas de temps avec des prédicteurs entraînés sur 50000 prédictions. Les paramètres de l’expérience sont indiqués dans la table \ref{tbl:movedist_params}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}\hline
+        \thead{Taille de la grille ($w \times h$)} & \thead{Chiffres} & \thead{Taille du curseur ($w \times h$)} & \thead{Directions} & \thead{Seuil de décision} \\ \hline
+        $1 \times 50$ & Tous & $27 \times 8$ & $\{\downarrow\}$ & 5 \\ \hline
+    \end{tabular}
+    \caption{Paramètres de l'expérience}
+    \label{tbl:movedist_params}
+\end{table}
+
 ![Accuracy moyenne en fonction de la distance de déplacement](img/movedist_acc_mean.png){#fig:movedist_acc_mean width=90%}
 
-![Variance de l'accuracy en fonction de la distance de déplacement](img/movedist_acc_std.png){#fig:movedist_acc_std width=75%}
+Nous nous sommes tout d’abord intéressés à l’accuracy moyenne sur les 100 itérations de l’expérience (figure @fig:movedist_acc_mean). On constate que la distance de déplacement qui donne la meilleure accuracy (72%) est de 3 pixels, dépassant de plus de 15% l’accuracy pour 1 pixel. Cela confirme donc bien notre hypothèse de départ.  
+Les distances comprises entre 4 et 6 pixels stagnent à 60%, après quoi l’accuracy baisse progressivement jusqu’à 10%. Cette asymptote n’est pas surprenante : elle correspond à l’accuracy qu’aurait un agent tentant des identifications complètement au hasard. Ce phénomène peut s’expliquer du fait que la distance devient trop grande par rapport à la taille du curseur. Par exemple à 24 pixels, le curseur effectue des bonds trop grands pour que les prédicteurs puissent établir une quelconque corrélation entre l’image à $t$ et l’image à $t+1$, d’autant plus que les deux images correspondent à deux chiffres différents.
 
-TODO:
+![Variance de l'accuracy en fonction de la distance de déplacement](img/movedist_acc_std.png){#fig:movedist_acc_std width=80%}
 
-Architecture :
+On s’est intéressés ensuite à la variance de notre accurracy sur les 100 itérations de l’expérience. Comme on peut déjà le voir sur la figure @fig:movedist_acc_mean, il existe un certain écart entre l’accuracy minimum et l’accuracy maximum ; néanmoins cet écart est constant quelque soit la distance de déplacement, comme en témoigne la caractère parallèle des courbes. La courbe de la variance dessinée sur la figure @fig:movedist_acc_std confirme cette constance, avec une variance qui oscille entre 4% et 5%. Même si ce n’est pas une valeur extrêmement élevée, cela traduit tout de même une certaine part d’aléa dans l’identification, qu’on ne peut donc pas corréler à la distance de déplacement ; elle est en fait probablement dûe à l’espace vide entre les chiffres, qui biaise la décision du fait que les prédicteurs sont tous bons pour prédire du vide.
 
-- Prédicteur = base de l'agent, architecture = base du prédicteur
-- Partie la plus "heuristique" $\rightarrow$ on ne comprend pas très bien comment ça marche $\rightarrow$ nécessité des tests
+\newpage
 
-Distance :
+## Algorithme de décision
 
-- Plus la distance est grande, plus on doit deviner de rangées de pixels $\Rightarrow$ plus de prédiction
-- Explore plus rapidement les imagettes $\Rightarrow$ vision plus globale sur moins de steps
-- Distance pas trop grande pour garder une corrélation entre image à $t$ et image à $t+1$
+Notre algorithme de décision est très simple et relativement efficace, mais nous avons cherché à l’améliorer. Nous avons voulu notamment rajouter un seuil afin d’affiner notre décision. L'intérêt est que le prédicteur qui correspond au bon digit ne renvoie pas toujours la meilleure prédiction, mais peut être la seconde meilleure ; or dans notre premier algorithme, seule la meilleure prédiction est prise en compte. En rajoutant un seuil, on ne sélectionne pas seulement la meilleure prédiction mais toutes celles qui sont meilleures que la moyenne.
+
+Chaque prédicteur renvoie une précision qui est accumulée dans un vecteur score selon un seuil (`Se1`). `Se1` est déterminé en fonction de la précision moyenne des prédictions lors de la phase d'entraînement. Il permet de décider si une prédiction est bonne ou mauvaise. Le vecteur score est construit en accumulant les différences entre la précision et le seuil. Si la prédiction n’est pas bonne, le score sera négatif et baissera pendant l’exploration, sinon il sera positif et aura tendance à croître. Les différents scores représentent "la probabilité" que le prédicteur associé soit le bon, ils sont ordonnés dans l’ordre croissant du chiffre associé.
+
+Ainsi les scores peuvent se différencier et certains se détacher des autres. Il est nécessaire de déterminer un second seuil `Se2`. Celui-ci sélectionne les meilleurs scores à partir d’une certaine valeur. Si aucun prédicteur n’est sélectionné, il faut continuer l’exploration. Sinon, l'identification correspond à l’indice du meilleur score dans le vecteur.
+
+![Schéma de fonctionnement du nouvel algorithme de décision](img/acc_v2.png){#fig:acc_v2 width=100%}
+
+\newpage
+
+Hélas cet algorithme n’a pas été retenu car les résultats finaux étaient sensiblement plus bas qu’avec notre premier algorithme de décision. Sa faiblesse réside dans le fait que les prédicteurs prédisent avec une précision qui peut fluctuer, par conséquent le seuil n’est pas le même selon le prédicteur. De plus, même en considérant un seuil différent par prédicteur, la valeur à déterminer doit être très précise, une petite déviation pouvant être très significative. Une solution envisageable serait de trouver ce seuil au travers d'un apprentissage supervisé, solution que nous n'avons pas eu le temps d'implémenter.
 
 # Conclusion {-}
 
-- Temps de calcul pour une identification ? Transposé dans un cadre de vision artificiel, par exemple en robotique => envie d'égaler des performances humaines
+Ce projet avait pour premier objectif d’implémenter un environnement d’apprentissage par renforcement robuste dans lequel l’agent doit identifier des chiffres en ne voyant que des portions de ces derniers. Le second objectif était d’implémenter un agent pour cet environnement, et d’explorer différentes pistes afin d’évaluer et améliorer ses performances. Nous avons réussi à répondre aux attentes de la partie environnement et nous avons obtenu des résultats encourageants pour notre agent.
+
+L’environnement est opérationnel, il contient toutes les fonctionnalités demandées et a été optimisé sur certains points, notamment sur le chargement de la grille de chiffres. Néanmoins, nous n’avons pas eu le temps d’implémenter et de tester d’algorithme d’apprentissage par renforcement dessus, et donc n’avons pas pu le soumettre à de réels tests de robustesse et d’adaptabilité à divers algorithmes. On a toutefois mis l’accent sur la généricité en utilisant au mieux l’API d’OpenAI Gym, notamment au travers du mécanisme de wrappers qui devrait assurer une bonne adaptabilité.
+
+L’agent est lui aussi opérationnel sur le plan de l’implémentation, et contient comme requis des prédicteurs et un algorithme de décision. Il arrive à identifier les chiffres avec une précision honorable pouvant atteindre les 80.5%, mais en ne déplaçant le curseur que dans une seule direction. Une première amélioration envisageable concerne la prise de décision, qui devrait permettre de pouvoir déplacer le curseur dans les quatre directions tout en conservant des résultats admissibles. Un second axe de recherche que nous n’avons pas eu le temps d’explorer est l’utilisation d’un algorithme d’apprentissage par renforcement avec un espace d’actions limité aux 4 directions, qui permettrait à l’agent d’optimiser ses déplacements pour maximiser son accuracy.
+
+Sur un plan plus personnel, ce projet nous a permis de nous familiariser avec les concepts et les outils du *machine learning*, et plus particulièrement du *deep reinforcement learning* (apprentissage par renforcement profond), une branche florissante de la recherche contemporaine en intelligence artificielle qui trouve de nombreuses applications en informatique et ailleurs.  
+Nous avons de même pu entrevoir les pratiques et les enjeux du monde de la recherche et commencer à développer nos propres compétences dans le domaine, que ce soit dans le travail de documentation, d’implémentation, d’expérimentation ou de rédaction.  
+Finalement, nous avons appris à collaborer sur un projet à long terme en binôme, nous enrichissant tant sur le plan technique avec l’utilisation d’outils tels que Git, que sur le plan communicationnel et organisationnel, entre nous et avec notre encadrant. Nous tenons par ailleurs à remercier M. Sigaud pour le temps et l’aide qu’il a su nous consacrer.
