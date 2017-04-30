@@ -31,6 +31,6 @@ def act(num):
     global num_steps
     num_steps=100
     grid_size = (50,50)
-    print("nb neurone", nb_neurone)
+    #print("nb neurone", nb_neurone)
     #print("num iterations: ", num_episodes*num_steps)
     train(0)
