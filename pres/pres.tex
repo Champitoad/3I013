@@ -161,7 +161,7 @@
             \center
             \fontsize{5.5pt}{7}\selectfont
             \begin{tabu}{|c|c|c|}\hline
-                \thead{Espace} & \thead{Attribut} & \thead{Classe}\\ \hline
+                Espace & Attribut & Classe \\ \hline
                 $D = \{0,1,\ldots,10\}$ & \texttt{digit\_space} & \texttt{Discrete} \\ \hline
                 $P = P_x \times P_y$ & \texttt{position\_space} & \texttt{MultiDiscrete} \\ \hline
                 $A = P \times D$ & \texttt{action\_space} & \texttt{Tuple} \\ \hline
@@ -268,6 +268,42 @@
 \end{frame}
 
 \section{Étude expérimentale}
+
+\begin{frame}
+    \frametitle{Architecture des prédicteurs}
+    \begin{figure}
+        \includegraphics[height=0.5\textheight]{arch_acc.png}
+    \end{figure}
+    \center
+    \fontsize{7pt}{7}\selectfont
+    \begin{tabu}{|c|c|c|c|}\hline
+        Taille du curseur & Chiffre & Directions & Distance de déplacement \\ \hline
+        $8 \times 8$ & 0 & $\{\downarrow\}$ & 1 pixel \\ \hline
+    \end{tabu}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Distance de déplacement}
+    \begin{columns}[c]
+        \begin{column}{.5\textwidth}
+            \begin{figure}
+                \includegraphics[height=0.5\textheight]{movedist_acc_mean.png}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{figure}
+                \includegraphics[height=0.45\textheight]{movedist_acc_std.png}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    \center
+    \fontsize{7pt}{7}\selectfont
+    \begin{tabu}{|c|c|c|c|c|}\hline
+        Taille de la grille & Chiffres & Taille du curseur & Directions & Seuil de décision \\ \hline
+        $1 \times 50$ & Tous & $27 \times 8$ & $\{\downarrow\}$ & 5 \\ \hline
+    \end{tabu}
+    \vspace{6em}
+\end{frame}
 
 \section{Conclusion}
 
