@@ -1,0 +1,122 @@
+\newcommand{\predicterguy}[1]{
+    \begin{minipage}{.15\textwidth}
+        \center
+        \includegraphics[width=0.75\linewidth]{predicter_guy_#1.png}
+    \end{minipage}}
+
+\newcommand{\pls}{\cellcolor{blue!20}}
+\newcommand{\win}{\cellcolor{green!20}}
+
+\begin{frame}[t]
+    \frametitle{Prise de décisions}
+    \fontsize{7pt}{7}\selectfont
+    \center
+
+    \only<1>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+    \end{tabu}}
+
+    \only<2>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<3>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<4>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<5>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<6>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 \pls & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<7>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 \pls & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+        0.82 & 0.89 & 0.85 & \multirow{2}{*}{3} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<8>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 \pls & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+        0.82 & 0.89 \pls & 0.85 & \multirow{2}{*}{3} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 2 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<9>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 \pls & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+        0.82 & 0.89 \pls & 0.85 & \multirow{2}{*}{3} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 2 & 0 & \\ \hline
+        0.83 & 0.91 & 0.86 & \multirow{2}{*}{4} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 2 & 0 & \\ \hline
+    \end{tabu}}
+
+    \only<10>{
+    \begin{tabu}{|c|c|c|c|} \hline
+        \predicterguy{1} & \predicterguy{2} & \predicterguy{3} & $t$ \\ \hline
+        0 & 0 & 0 & \multirow{2}{*}{0} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 0 & 0 & \\ \hline
+        0.81 & 0.86 \pls & 0.83 & \multirow{2}{*}{1} \\ \cdashline{1-3}[1pt/1.5pt]
+        0 & 1 & 0 & \\ \hline
+        0.84 \pls & 0.83 & 0.80 & \multirow{2}{*}{2} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 1 & 0 & \\ \hline
+        0.82 & 0.89 \pls & 0.85 & \multirow{2}{*}{3} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 2 & 0 & \\ \hline
+        0.83 & 0.91 \win & 0.86 & \multirow{2}{*}{4} \\ \cdashline{1-3}[1pt/1.5pt]
+        1 & 3 & 0 & \\ \hline
+    \end{tabu}}
+\end{frame}
