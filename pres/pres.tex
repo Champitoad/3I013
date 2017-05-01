@@ -6,13 +6,21 @@
 \usepackage{textcomp}
 \usepackage{import}
 \usepackage{tabu}
+\usepackage{makecell}
 \usepackage{colortbl}
 \usepackage{arydshln}
 \usepackage{multirow}
 \usepackage{pgffor}
 
-%\usepackage{minted}
-%\usemintedstyle{trac}
+\usepackage{minted}
+\usemintedstyle{trac}
+\newmintedfile[python]{python}{
+    tabsize=4,
+    linenos,
+    frame=lines,
+    framesep=2mm
+}
+\renewcommand\theFancyVerbLine{\arabic{FancyVerbLine}}
 
 % More vertical spacing in tabu lines
 \tabulinesep=1.5mm
@@ -41,7 +49,6 @@
     %\frametitle{Titre}
     %\begin{columns}[T]
         %\begin{column}{.48\textwidth}
-            %\center
             %\begin{block}{Bloc 1}
                 %\begin{itemize}
                     %\item Item 1
@@ -99,6 +106,125 @@
 \end{frame}
 
 \section{Environnement}
+
+\begin{frame}
+    \frametitle{Chargement de la grille}
+    \begin{columns}[c]
+        \begin{column}{.48\textwidth}
+            \begin{block}{MNIST}
+                \begin{itemize}
+                    \item images + labels
+                    \item training set + testing set
+                \end{itemize}
+            \end{block}
+            \uncover<2->{
+            \begin{block}{Sous-ensemble de chiffres}
+                \begin{enumerate}
+                    \item Chargement des labels
+                    \item Sélection des indices
+                    \item Chargement des images
+                    \item Sélection des labels
+                \end{enumerate}
+            \end{block}}
+        \end{column}
+        \uncover<2->{
+        \begin{column}{.48\textwidth}
+            \center
+            \fontsize{4pt}{7}\selectfont
+            \python{code/loadgrid.py}
+        \end{column}}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Apprentissage par renforcement}
+    \begin{columns}[c]
+        \begin{column}{.44\textwidth}
+            \begin{block}{IA}
+                \begin{itemize}
+                    \item Classe d'algorithmes d'apprentissage
+                    \item Inspiré de la psychologie animale
+                \end{itemize}
+            \end{block}
+            \uncover<2->{
+            \begin{block}{Cadre formel : \textsc{mdp}}
+                \begin{enumerate}
+                    \item Ensemble d'états $S$
+                    \item Ensemble d'actions $A$
+                    \item Ensemble de récompenses $R$
+                    \item Fonction de probabilités $p$
+                \end{enumerate}
+            \end{block}}
+        \end{column}
+        \uncover<2->{
+        \begin{column}{.52\textwidth}
+            \center
+            \fontsize{5.5pt}{7}\selectfont
+            \begin{tabu}{|c|c|c|}\hline
+                \thead{Espace} & \thead{Attribut} & \thead{Classe}\\ \hline
+                $D = \{0,1,\ldots,10\}$ & \texttt{digit\_space} & \texttt{Discrete} \\ \hline
+                $P = P_x \times P_y$ & \texttt{position\_space} & \texttt{MultiDiscrete} \\ \hline
+                $A = P \times D$ & \texttt{action\_space} & \texttt{Tuple} \\ \hline
+                $S = [0;255]^{h \times w}$ & \texttt{observation\_space} & \texttt{Box} \\ \hline
+            \end{tabu}
+        \end{column}}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Espaces et wrappers}
+    \fontsize{9pt}{7}\selectfont
+    \begin{block}{Wrapper}
+        \begin{itemize}
+            \item $\Leftrightarrow$ Design pattern \textit{décorateur} pour \texttt{gym.Env}
+            \item Conversion espaces d'actions/états (\texttt{ActionWrapper}/\texttt{ObservationWrapper})
+        \end{itemize}
+    \end{block}
+    \uncover<2->{
+    \begin{block}{Pour \texttt{NumGrid}}
+        \begin{itemize}
+            \item \texttt{DirectionWrapper}
+            \item \texttt{DiscreteDirectionWrapper}
+            \item \texttt{DiscretePositionWrapper}
+            \item \texttt{DiscreteActionWrapper}
+        \end{itemize}
+    \end{block}
+    \center
+    \fontsize{8pt}{7}\selectfont
+    \python{code/wrappers.py}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Méthode \texttt{step}}
+    \fontsize{9pt}{7}\selectfont
+    \begin{columns}[c]
+        \begin{column}{.53\textwidth}
+            \begin{block}{Fonction}
+                \begin{itemize}
+                    \item 1 pas de temps boucle d'interaction
+                    \item Fournit les informations à l'agent
+                \end{itemize}
+            \end{block}
+            \uncover<2->{
+            \begin{block}{Opérations}
+                \begin{enumerate}
+                    \item Vérification position curseur
+                    \item Déplacement curseur
+                    \item Choix récompense
+                    \item Changement de zone
+                    \item Vérification fin épisode
+                    \item Retour des informations
+                \end{enumerate}
+            \end{block}}
+        \end{column}
+        \uncover<2->{
+        \begin{column}{.43\textwidth}
+            \center
+            \fontsize{4.5pt}{7}\selectfont
+            \python{code/step.py}
+        \end{column}}
+    \end{columns}
+\end{frame}
 
 \section{Agent}
 
