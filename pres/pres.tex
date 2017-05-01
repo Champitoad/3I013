@@ -48,28 +48,23 @@
 
 \frame{\titlepage}
 
-\begin{frame}
-    \frametitle{Sommaire}
-    \tableofcontents
-\end{frame}
-
-\section{Introduction}
+\section*{Introduction}
 
 \begin{frame}
     \frametitle{Contexte}
     \begin{columns}[T]
         \begin{column}{.48\textwidth}
             \center
-            \begin{block}{Environnement}
-                TODO
+            \begin{block}{Objectif 1}
+                Environnement
             \end{block}
-            \begin{block}{Agent}
-                TODO
+            \begin{block}{Objectif 2}
+                Agent
             \end{block}
         \end{column}
         \begin{column}{.48\textwidth}
             \begin{figure}
-                \includegraphics[height=0.5\textheight]{numgrid.png}
+                \includegraphics[height=0.5\textheight]{numgrid10x10.png}
             \end{figure}
         \end{column}
     \end{columns}
@@ -86,6 +81,11 @@
         \item Construction de l'\textbf{espace}
         \item Boucle d'interaction
     \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sommaire}
+    \tableofcontents
 \end{frame}
 
 \section{Environnement}
@@ -213,7 +213,7 @@
 
 \begin{frame}
     \frametitle{Réseaux de neurones}
-    \begin{columns}[T]
+    \begin{columns}[c]
         \begin{column}{.48\textwidth}
             \begin{figure}
                 \includegraphics[width=\textwidth]{neuralnet.png}
@@ -223,10 +223,6 @@
             \begin{figure}
                 \includegraphics[width=0.8\textwidth]{neuron.png}
             \end{figure}
-            \begin{block}{}
-                \center
-                Commentaires ?
-            \end{block}
         \end{column}
     \end{columns}
 \end{frame}
@@ -288,10 +284,24 @@
     \vspace{6em}
 \end{frame}
 
-\section{Conclusion}
+\section*{Conclusion}
 
 \begin{frame}
     \frametitle{Conclusion}
+    \begin{block}{Ce qui a été accompli}
+        \begin{itemize}
+            \item Environnement opérationnel, performant, générique
+            \item Agent honorable sur 1 direction (accuracy max. = \textbf{80.5}\%)
+        \end{itemize}
+    \end{block}
+    \begin{block}{Ce qu'il reste à faire...}
+        \begin{itemize}
+            \item Tests + poussés de l'environnement avec des algos d'AR
+            \item Décision \textrightarrow~accuracy satisfaisante sur 4 directions
+            \item Algorithme d'AR pour optimiser les déplacements de l'agent
+        \end{itemize}
+    \end{block}
+    Merci pour votre attention !
 \end{frame}
 
 \end{document}
