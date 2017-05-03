@@ -71,6 +71,7 @@ def experiment(move_distance):
     return data
 
 if __name__ == '__main__':
+    move_dists = (1,2,3,4,5,6,8,12,18,24)
     for move_distance in move_dists:
         print('\n*************** MOVE_DISTANCE = {} ***************'.format(move_distance))
         train_subnets(move_distance)
